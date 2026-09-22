@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface ProductForm {
+  productCode: string;
   name: string;
   description: string;
   price: string;
@@ -23,6 +24,7 @@ export default function NewProductPage() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState<ProductForm>({
+    productCode: '',
     name: '',
     description: '',
     price: '',
@@ -142,16 +144,29 @@ export default function NewProductPage() {
         <h1 className="font-serif text-3xl text-plum-dark mb-8">Add New Product</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Product Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Product Code (Optional)</label>
+              <input
+                type="text"
+                name="productCode"
+                value={formData.productCode}
+                onChange={handleChange}
+                placeholder="Leave blank to auto-generate (e.g., SK-001)"
+                className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Product Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
+              />
+            </div>
           </div>
 
           <div>

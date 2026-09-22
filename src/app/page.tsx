@@ -147,6 +147,7 @@ export default async function Home() {
                       </div>
                     </div>
                     <div className="p-3 md:p-5">
+                      <p className="text-[10px] md:text-xs text-plum/70 mb-1 font-medium">{product.productCode || ''}</p>
                       <p className="text-[10px] md:text-sm text-plum mb-1 font-medium">{product.category}</p>
                       <h3 className="font-semibold text-foreground mb-1 md:mb-2 line-clamp-2 text-xs md:text-base group-hover:text-plum transition-colors">{product.name}</h3>
                       <div className="flex items-center justify-between mb-2 md:mb-3">
@@ -161,7 +162,7 @@ export default async function Home() {
                           <span>📞</span> Call
                         </a>
                         <a
-                          href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (PKR ${product.price.toLocaleString()})`)}`}
+                          href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (${product.productCode || ''}) - PKR ${product.price.toLocaleString()}`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-green-600 text-white text-[10px] md:text-xs font-semibold hover:bg-green-700 transition-colors"

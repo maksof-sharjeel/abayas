@@ -8,9 +8,10 @@ import { useSearchParams } from 'next/navigation';
 
 interface Product {
   id: string;
+  productCode?: string;
   name: string;
-  price: number;
   category: string;
+  price: number;
   images: string[];
   stockStatus: string;
 }
@@ -114,6 +115,7 @@ export default function ShopPage() {
                     )}
                   </div>
                   <div className="p-3 md:p-4">
+                    <p className="text-[10px] md:text-xs text-plum/70 mb-1 font-medium">{product.productCode || ''}</p>
                     <p className="text-[10px] md:text-sm text-plum mb-1">{product.category}</p>
                     <h3 className="font-semibold text-foreground mb-1 md:mb-2 text-xs md:text-base line-clamp-2">{product.name}</h3>
                     <p className="text-plum font-bold text-sm md:text-base mb-2 md:mb-3">PKR {product.price.toLocaleString()}</p>
@@ -125,7 +127,7 @@ export default function ShopPage() {
                         <span>📞</span> Call
                       </a>
                       <a
-                        href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (PKR ${product.price.toLocaleString()})`)}`}
+                        href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (${product.productCode || ''}) - PKR ${product.price.toLocaleString()}`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-green-600 text-white text-[10px] md:text-xs font-semibold hover:bg-green-700 transition-colors"

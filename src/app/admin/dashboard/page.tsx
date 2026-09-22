@@ -79,8 +79,8 @@ export default function AdminDashboard() {
         </div>
 
         <div className="mt-6 md:mt-8">
-          <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-4 md:mb-6">Quick Actions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+          <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-4 md:mb-6">Order Management</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <Link
               href="/admin/orders/new"
               className="group bg-gradient-to-br from-green-50 to-green-100 rounded-lg md:rounded-xl p-6 md:p-8 hover:shadow-2xl transition-all transform hover:-translate-y-2 border border-green-300"
@@ -101,6 +101,28 @@ export default function AdminDashboard() {
               </div>
               <h2 className="font-serif text-xl md:text-2xl text-blue-800 mb-2 group-hover:text-blue-900 transition-colors">View Orders</h2>
               <p className="text-foreground/70 text-sm md:text-base">See all recorded orders</p>
+            </Link>
+
+            <Link
+              href="/admin/delivery-zones"
+              className="group bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg md:rounded-xl p-6 md:p-8 hover:shadow-2xl transition-all transform hover:-translate-y-2 border border-yellow-300"
+            >
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-yellow-200 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:bg-yellow-300 transition-colors">
+                <span className="text-2xl md:text-3xl">🚚</span>
+              </div>
+              <h2 className="font-serif text-xl md:text-2xl text-yellow-800 mb-2 group-hover:text-yellow-900 transition-colors">Delivery Zones</h2>
+              <p className="text-foreground/70 text-sm md:text-base">Manage delivery charges</p>
+            </Link>
+
+            <Link
+              href="/admin/payment-methods"
+              className="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg md:rounded-xl p-6 md:p-8 hover:shadow-2xl transition-all transform hover:-translate-y-2 border border-purple-300"
+            >
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-purple-200 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:bg-purple-300 transition-colors">
+                <span className="text-2xl md:text-3xl">💳</span>
+              </div>
+              <h2 className="font-serif text-xl md:text-2xl text-purple-800 mb-2 group-hover:text-purple-900 transition-colors">Payment Methods</h2>
+              <p className="text-foreground/70 text-sm md:text-base">Manage payment options</p>
             </Link>
           </div>
         </div>

@@ -21,6 +21,9 @@ export default function Navbar() {
             <Link href="/shop" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
               Shop
             </Link>
+            <Link href="/track" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
+              Track Order
+            </Link>
             <Link href="/contact" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
               Contact
             </Link>
@@ -50,6 +53,9 @@ export default function Navbar() {
             </Link>
             <Link href="/shop" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Shop
+            </Link>
+            <Link href="/track" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
+              Track Order
             </Link>
             <Link href="/contact" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Contact

@@ -17,8 +17,18 @@ model Admin {
   createdAt DateTime @default(now())
 }
 
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique
+  password  String?
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
 model Product {
   id          String   @id @default(uuid())
+  productCode String   @unique
   name        String
   description String
   price       Float
@@ -30,6 +40,7 @@ model Product {
   featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orders      Order[]
 }
 
 model Category {
@@ -49,4 +60,60 @@ model Settings {
   facebook            String?
   tiktok              String?
   updatedAt           DateTime @updatedAt
+}
+
+model DeliveryZone {
+  id             String   @id @default(uuid())
+  cityName       String   @unique
+  deliveryCharge Float
+  updatedAt      DateTime @updatedAt
+}
+
+model PaymentMethod {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  instructions String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  trackingCode    String    @unique
+
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+
+  customerName    String
+  customerPhone   String
+  customerAddress String?
+  customerCity    String?
+
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+  productName     String
+  quantity        Int       @default(1)
+  size            String?
+
+  itemPrice       Float
+  deliveryCharge  Float     @default(0)
+  totalPrice      Float
+
+  status          String    @default("Pending")
+  orderSource     String    @default("Website")
+
+  paymentMethodId String?
+  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  paymentStatus   String    @default("Unpaid")
+  paymentScreenshotUrl String?
+  amountPaid      Float     @default(0)
+
+  deliveryChargePaid   Boolean  @default(false)
+  deliveryChargeScreenshotUrl String?
+
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
