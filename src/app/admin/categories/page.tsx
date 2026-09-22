@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface Category {
-  _id: string;
+  id: string;
   name: string;
   slug: string;
   description?: string;
@@ -53,7 +53,7 @@ export default function AdminCategories() {
     try {
       const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
       if (res.ok) {
-        setCategories(categories.filter(c => c._id !== id));
+        setCategories(categories.filter(c => c.id !== id));
       }
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -104,110 +104,120 @@ export default function AdminCategories() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-6 py-4">
+      <nav className="bg-plum-dark text-cream px-4 md:px-6 py-3 md:py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-2xl hover:text-gold">
+          <Link href="/admin/dashboard" className="font-serif text-lg md:text-2xl hover:text-gold">
             ← Back to Dashboard
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm">{session.user?.email}</span>
+          <div className="flex items-center gap-3 md:gap-4">
+            <span className="text-xs md:text-sm">{session.user?.email}</span>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="font-serif text-3xl text-plum-dark">Categories</h1>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
+          <h1 className="font-serif text-2xl md:text-3xl text-plum-dark">Categories</h1>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-plum text-cream px-6 py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors"
+            className="bg-plum text-cream px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
           >
-            {showForm ? 'Cancel' : 'Add New Category'}
+            {showForm ? 'Cancel' : 'Add Category'}
           </button>
         </div>
 
         {showForm && (
-          <div className="bg-cream rounded-lg p-6 mb-8 border border-rose/20">
-            <h2 className="font-serif text-xl text-plum-dark mb-4">New Category</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="bg-cream rounded-lg p-4 md:p-6 mb-6 md:mb-8 border border-rose/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Name</label>
+                <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleNameChange}
                   required
-                  className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Slug</label>
+                <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Slug</label>
                 <input
                   type="text"
                   name="slug"
                   value={formData.slug}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum bg-gray-50"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Description (optional)</label>
+              <div className="md:col-span-2">
+                <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
-                  rows={2}
-                  className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
+                  rows={3}
+                  className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
                 />
               </div>
+            </div>
+            <div className="mt-4 md:mt-6 flex gap-3 md:gap-4">
               <button
                 type="submit"
-                className="bg-plum text-cream px-6 py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors"
+                className="bg-plum text-cream px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
               >
-                Create Category
+                Save Category
               </button>
-            </form>
-          </div>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="border border-plum text-plum px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum hover:text-cream transition-colors text-sm md:text-base"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         )}
 
         <div className="bg-cream rounded-lg overflow-hidden border border-rose/20">
-          <table className="w-full">
-            <thead className="bg-rose-light">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-plum-dark">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-plum-dark">Slug</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-plum-dark">Description</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-plum-dark">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.length === 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px]">
+              <thead className="bg-rose-light">
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-foreground/60">
-                    No categories yet. Add your first category!
-                  </td>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Name</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Slug</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Description</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Actions</th>
                 </tr>
-              ) : (
-                categories.map((category) => (
-                  <tr key={category._id} className="border-t border-rose/20">
-                    <td className="px-6 py-4 text-foreground">{category.name}</td>
-                    <td className="px-6 py-4 text-foreground/70">{category.slug}</td>
-                    <td className="px-6 py-4 text-foreground/70">{category.description || '-'}</td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleDelete(category._id)}
-                        className="text-red-600 hover:text-red-700 font-medium"
-                      >
-                        Delete
-                      </button>
+              </thead>
+              <tbody>
+                {categories.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 md:px-6 py-6 md:py-8 text-center text-foreground/60 text-sm md:text-base">
+                      No categories yet. Add your first category!
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  categories.map((category) => (
+                    <tr key={category.id} className="border-t border-rose/20">
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-foreground text-xs md:text-base">{category.name}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-foreground/70 text-xs md:text-base">{category.slug}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-foreground/70 text-xs md:text-base">{category.description || '-'}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4">
+                        <button
+                          onClick={() => handleDelete(category.id)}
+                          className="text-red-600 hover:text-red-700 font-medium text-xs md:text-sm"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
