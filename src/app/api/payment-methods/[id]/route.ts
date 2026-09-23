@@ -1,3 +1,4 @@
+import { isAdmin } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -6,6 +7,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     const body = await request.json();
     const { name, accountTitle, accountNumber, ibanNumber, bank, instructions, isActive } = body;
@@ -27,6 +29,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     // Check if method has orders
     const orderCount = await prisma.order.count({

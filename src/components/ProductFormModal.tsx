@@ -8,6 +8,7 @@ interface Product {
   name: string;
   description: string;
   price: number;
+  costPrice?: number | null;
   category: string;
   fabric: string;
   images: string[];
@@ -27,6 +28,7 @@ const emptyProduct: Product = {
   name: '',
   description: '',
   price: 0,
+  costPrice: null,
   category: 'Everyday Edit',
   fabric: '',
   images: [],
@@ -40,7 +42,7 @@ export default function ProductFormModal({ product, onClose, onSaved }: ProductF
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
-  const updateField = (name: string, value: string | number | boolean | string[]) => {
+  const updateField = (name: string, value: string | number | boolean | string[] | null) => {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
@@ -68,6 +70,7 @@ export default function ProductFormModal({ product, onClose, onSaved }: ProductF
       const payload = {
         ...form,
         price: Number(form.price),
+        costPrice: form.costPrice ?? null,
         sizes: form.sizes,
       };
       const response = await fetch(product?.id ? `/api/products/${product.id}` : '/api/products', {
@@ -75,12 +78,12 @@ export default function ProductFormModal({ product, onClose, onSaved }: ProductF
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error('Unable to save product');
+      if (!response.ok) { const data = await response.json(); throw new Error(data.error || 'Unable to save product'); }
       onSaved(await response.json());
       onClose();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Failed to save product');
+      alert(error instanceof Error ? error.message : 'Failed to save product');
     } finally {
       setSaving(false);
     }
@@ -98,9 +101,10 @@ export default function ProductFormModal({ product, onClose, onSaved }: ProductF
             <label className="text-sm font-medium text-foreground">Product code<input value={form.productCode || ''} onChange={(e) => updateField('productCode', e.target.value)} placeholder="Auto-generated if blank" className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
             <label className="text-sm font-medium text-foreground">Product name<input required value={form.name} onChange={(e) => updateField('name', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
           </div>
+          <label className="block text-sm font-medium text-foreground">Cost price per item (PKR)<input type="number" min="0" step="0.01" value={form.costPrice ?? ''} onChange={(e) => updateField('costPrice', e.target.value === '' ? null : Number(e.target.value))} placeholder="Leave blank if unknown" className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /><span className="mt-1 block text-xs text-foreground/60">Purchase or manufacturing cost. Visible only to admins.</span></label>
           <label className="block text-sm font-medium text-foreground">Description<textarea required rows={3} value={form.description} onChange={(e) => updateField('description', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <label className="text-sm font-medium text-foreground">Price (PKR)<input required type="number" min="0" value={form.price || ''} onChange={(e) => updateField('price', Number(e.target.value))} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
+            <label className="text-sm font-medium text-foreground">Selling price (PKR)<input required type="number" min="0" step="0.01" value={form.price || ''} onChange={(e) => updateField('price', Number(e.target.value))} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
             <label className="text-sm font-medium text-foreground">Category<select value={form.category} onChange={(e) => updateField('category', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum"><option>Everyday Edit</option><option>Hand Embroidered</option><option>Occasion</option><option>Minimal</option></select></label>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

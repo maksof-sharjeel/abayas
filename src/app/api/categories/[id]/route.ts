@@ -1,3 +1,4 @@
+import { isAdmin } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -6,6 +7,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const { id } = await params;
     await prisma.category.delete({
       where: { id },

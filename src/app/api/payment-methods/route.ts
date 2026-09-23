@@ -1,3 +1,4 @@
+import { isAdmin } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -15,6 +16,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await request.json();
     const { name, accountTitle, accountNumber, ibanNumber, bank, instructions, isActive } = body;
 

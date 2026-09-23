@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-interface Product { id: string; productCode?: string; name: string; price: number; }
+interface Product { id: string; productCode?: string; name: string; price: number; costPrice?: number | null; }
 interface DeliverySetting { id: string | null; deliveryCharge: number; }
 interface PaymentMethod { id: string; name: string; isActive: boolean; }
 
@@ -36,12 +36,12 @@ export default function OrderFormModal({ onClose, onSaved }: OrderFormModalProps
     setSaving(true);
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, productName: selectedProduct.name, itemPrice: selectedProduct.price, deliveryCharge, totalPrice: total }) });
-      if (!response.ok) throw new Error('Unable to create order');
+      if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Unable to create order'); }
       onSaved();
       onClose();
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Failed to record order');
+      alert(error instanceof Error ? error.message : 'Failed to record order');
     } finally {
       setSaving(false);
     }
@@ -57,6 +57,7 @@ export default function OrderFormModal({ onClose, onSaved }: OrderFormModalProps
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2"><label className="text-sm font-medium text-foreground">City<input required value={form.customerCity} onChange={(e) => update('customerCity', e.target.value)} placeholder="e.g. Lahore" className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label><label className="text-sm font-medium text-foreground">Product<select required value={form.productId} onChange={(e) => update('productId', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum"><option value="">Select product</option>{products.map((product) => <option key={product.id} value={product.id}>{product.productCode ? `${product.productCode} · ` : ''}{product.name}</option>)}</select></label></div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3"><label className="text-sm font-medium text-foreground">Size<input value={form.size} onChange={(e) => update('size', e.target.value)} placeholder="54" className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label><label className="text-sm font-medium text-foreground">Quantity<input type="number" min="1" value={form.quantity} onChange={(e) => update('quantity', Number(e.target.value))} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label><label className="text-sm font-medium text-foreground">Source<select value={form.orderSource} onChange={(e) => update('orderSource', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum"><option>Phone</option><option>WhatsApp</option><option>Walk-in</option></select></label></div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2"><label className="text-sm font-medium text-foreground">Payment method<select value={form.paymentMethodId} onChange={(e) => update('paymentMethodId', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum"><option value="">Select method</option>{methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}</select></label><div className="flex items-center gap-3 pt-7 text-sm font-medium text-foreground"><input type="checkbox" checked={form.deliveryChargePaid} onChange={(e) => update('deliveryChargePaid', e.target.checked)} className="h-4 w-4 accent-plum" /> Delivery charge paid</div></div>
+          <div className="grid grid-cols-1 gap-3 rounded-lg bg-rose-light p-4 text-sm sm:grid-cols-3"><div>Cost / item<p className="mt-1 font-semibold">{selectedProduct?.costPrice == null ? 'Not set' : 'PKR ' + selectedProduct.costPrice.toLocaleString()}</p></div><div>Selling / item<p className="mt-1 font-semibold">{selectedProduct ? 'PKR ' + selectedProduct.price.toLocaleString() : 'Select a product'}</p></div><div>Delivery charge<p className="mt-1 font-semibold">PKR {deliveryCharge.toLocaleString()}</p></div></div>
           <label className="block text-sm font-medium text-foreground">Notes<textarea rows={2} value={form.notes} onChange={(e) => update('notes', e.target.value)} className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-cream px-3 py-2.5 text-sm outline-none focus:border-plum" /></label>
           <div className="flex items-center justify-between border-t border-plum-dark/10 pt-5"><div><p className="text-xs text-foreground/55">Order total</p><p className="text-xl font-semibold text-plum-dark">PKR {total.toLocaleString()}</p></div><div className="flex gap-3"><button type="button" onClick={onClose} className="rounded-full border border-plum-dark/20 px-5 py-3 text-sm font-semibold text-plum-dark hover:bg-rose-light">Cancel</button><button type="submit" disabled={saving} className="rounded-full bg-plum-dark px-5 py-3 text-sm font-semibold text-cream hover:bg-plum disabled:opacity-50">{saving ? 'Saving...' : 'Save order'}</button></div></div>
         </form>

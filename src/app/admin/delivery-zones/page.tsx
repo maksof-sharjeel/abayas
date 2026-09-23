@@ -35,6 +35,7 @@ export default function DeliveryZonesPage() {
         if (res.ok) {
           const data = await res.json();
           setSetting(data.id ? data : null);
+          setFormData({ deliveryCharge: data.deliveryCharge || 0 });
         }
       } catch (error) {
         console.error('Error fetching delivery zones:', error);

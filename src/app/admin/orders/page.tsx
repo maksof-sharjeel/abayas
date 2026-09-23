@@ -17,6 +17,7 @@ interface Order {
   quantity: number;
   size?: string;
   itemPrice: number;
+  itemCost: number | null;
   deliveryCharge: number;
   totalPrice: number;
   status: string;
@@ -26,6 +27,7 @@ interface Order {
   };
   paymentStatus: string;
   deliveryChargePaid: boolean;
+  deliveryChargeScreenshotUrl?: string | null;
   createdAt: string;
 }
 
@@ -98,6 +100,14 @@ export default function OrdersPage() {
     }
   };
 
+  const handleDeliveryPaidUpdate = async (id: string, paid: boolean) => {
+    try {
+      const response = await fetch('/api/orders/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ deliveryChargePaid: paid }) });
+      if (!response.ok) throw new Error('Unable to update delivery payment');
+      setOrders(current => current.map(order => order.id === id ? { ...order, deliveryChargePaid: paid } : order));
+    } catch { alert('Could not update delivery payment. Please try again.'); }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this order?')) return;
 
@@ -144,6 +154,8 @@ export default function OrdersPage() {
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Phone</th>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Product</th>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Qty</th>
+                  <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Cost / item</th>
+                  <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Selling / item</th>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Total</th>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Source</th>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Del. Charge</th>
@@ -156,7 +168,7 @@ export default function OrdersPage() {
               <tbody>
                 {orders.length === 0 ? (
                   <tr>
-                    <td colSpan={13} className="px-4 md:px-6 py-6 md:py-8 text-center text-foreground/60 text-sm md:text-base">
+                    <td colSpan={15} className="px-4 md:px-6 py-6 md:py-8 text-center text-foreground/60 text-sm md:text-base">
                       No orders yet. Add your first order!
                     </td>
                   </tr>
@@ -171,15 +183,14 @@ export default function OrdersPage() {
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">{order.customerPhone}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">{order.productName}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">{order.quantity}</td>
+                      <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">{order.itemCost == null ? 'Not set' : 'PKR ' + order.itemCost.toLocaleString()}</td>
+                      <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">PKR {order.itemPrice.toLocaleString()}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">PKR {order.totalPrice.toLocaleString()}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">{order.orderSource}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3 text-foreground text-[10px] md:text-xs">PKR {order.deliveryCharge.toLocaleString()}</td>
                       <td className="px-3 md:px-4 py-2 md:py-3">
-                        <span className={`px-2 py-1 rounded text-[10px] md:text-xs font-semibold ${
-                          order.deliveryChargePaid ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {order.deliveryChargePaid ? 'Yes' : 'No'}
-                        </span>
+                        <label className="flex items-center gap-2"><input type="checkbox" aria-label={'Delivery paid for ' + order.trackingCode} checked={order.deliveryChargePaid} onChange={(event) => handleDeliveryPaidUpdate(order.id, event.target.checked)} />{order.deliveryChargePaid ? 'Verified' : 'Unverified'}</label>
+                        {order.deliveryChargeScreenshotUrl?.startsWith('https://res.cloudinary.com/') && <a className="mt-1 block text-plum underline" href={order.deliveryChargeScreenshotUrl} target="_blank" rel="noopener noreferrer">View proof</a>}
                       </td>
                       <td className="px-3 md:px-4 py-2 md:py-3">
                         <select

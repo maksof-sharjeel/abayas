@@ -44,6 +44,7 @@ model Product {
   productCode String   @unique
   name        String
   description String
+  costPrice   Float?
   price       Float
   category    String
   fabric      String
@@ -123,6 +124,7 @@ model Order {
   quantity        Int       @default(1)
   size            String?
 
+  itemCost        Float?
   itemPrice       Float
   deliveryCharge  Float     @default(0)
   totalPrice      Float

@@ -1,3 +1,5 @@
+import { isAdmin } from '@/lib/auth';
+import { productData, publicProduct } from '@/lib/product-data';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -15,7 +17,7 @@ export async function GET(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
     
-    return NextResponse.json(product);
+    return NextResponse.json(await isAdmin() ? product : publicProduct(product), { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
@@ -28,11 +30,14 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await request.json();
+    let data;
+    try { data = productData(body); } catch (error) { return NextResponse.json({ error: (error as Error).message }, { status: 400 }); }
     
     const product = await prisma.product.update({
       where: { id },
-      data: body,
+      data,
     });
     
     return NextResponse.json(product);
@@ -48,6 +53,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     await prisma.product.delete({
       where: { id },
     });

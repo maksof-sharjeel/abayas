@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, type UploadApiResponse } from 'cloudinary';
 import { Readable } from 'stream';
 
 cloudinary.config({
@@ -12,40 +12,33 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get('file');
 
-    if (!file) {
+    if (!(file instanceof File)) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size === 0 || file.size > 5 * 1024 * 1024) return NextResponse.json({ error: 'Upload a JPG, PNG or WebP image up to 5 MB' }, { status: 400 });
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
     // Convert buffer to stream for Cloudinary
     const stream = Readable.from(buffer);
 
-    return new Promise((resolve: (value: NextResponse) => void, reject) => {
+    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'abayas/products',
-          resource_type: 'auto',
-        },
-        (error: any, result: any) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
+        { folder: 'abayas/products', resource_type: 'image' },
+        (error, uploaded) => {
+          if (error) reject(error);
+          else if (uploaded) resolve(uploaded);
+          else reject(new Error('Cloudinary returned no upload result'));
         }
       );
-
+      stream.on('error', reject);
+      uploadStream.on('error', reject);
       stream.pipe(uploadStream);
-    }).then((result: any) => {
-      return NextResponse.json({ url: result.secure_url });
-    }).catch((error: any) => {
-      console.error('Error uploading to Cloudinary:', error);
-      return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
     });
+    return NextResponse.json({ url: result.secure_url });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });

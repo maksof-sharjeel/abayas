@@ -146,6 +146,7 @@ export default function ProductDetailPage() {
           body: formData,
         });
 
+        if (!uploadRes.ok) throw new Error('Payment proof upload failed. Please try again.');
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json();
           deliveryChargeScreenshotUrl = uploadData.url;
@@ -166,7 +167,7 @@ export default function ProductDetailPage() {
         totalPrice: (product.price * orderFormData.quantity) + deliveryCharge,
         orderSource: 'Website',
         paymentMethodId: orderFormData.paymentMethodId,
-        deliveryChargePaid: true,
+        deliveryChargePaid: false,
         deliveryChargeScreenshotUrl,
       };
 
@@ -186,7 +187,7 @@ export default function ProductDetailPage() {
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      alert('Failed to place order');
+      alert(error instanceof Error ? error.message : 'Failed to place order');
     } finally {
       setOrderLoading(false);
     }

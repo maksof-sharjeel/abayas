@@ -13,6 +13,7 @@ interface Product {
   name: string;
   description: string;
   price: number;
+  costPrice?: number | null;
   category: string;
   fabric: string;
   images: string[];
@@ -102,7 +103,8 @@ export default function AdminProducts() {
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Name</th>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Category</th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Price</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Cost price</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Selling price</th>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Stock</th>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Featured</th>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Actions</th>
@@ -111,7 +113,7 @@ export default function AdminProducts() {
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 md:px-6 py-6 md:py-8 text-center text-foreground/60 text-sm md:text-base">
+                    <td colSpan={7} className="px-4 md:px-6 py-6 md:py-8 text-center text-foreground/60 text-sm md:text-base">
                       No products yet. Add your first product!
                     </td>
                   </tr>
@@ -120,6 +122,7 @@ export default function AdminProducts() {
                     <tr key={product.id} className="border-t border-rose/20">
                       <td className="px-4 md:px-6 py-3 md:py-4 text-foreground text-xs md:text-base">{product.name}</td>
                       <td className="px-4 md:px-6 py-3 md:py-4 text-foreground/70 text-xs md:text-base">{product.category}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-foreground text-xs md:text-base">{product.costPrice == null ? 'Not set' : 'PKR ' + product.costPrice.toLocaleString()}</td>
                       <td className="px-4 md:px-6 py-3 md:py-4 text-foreground text-xs md:text-base">PKR {product.price.toLocaleString()}</td>
                       <td className="px-4 md:px-6 py-3 md:py-4">
                         <span className={`px-2 py-1 rounded-full text-[10px] md:text-xs font-semibold ${

@@ -1,3 +1,6 @@
+import type { Prisma } from '@prisma/client';
+import { isAdmin } from '@/lib/auth';
+import { productData, publicProduct } from '@/lib/product-data';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -7,7 +10,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const featured = searchParams.get('featured');
     
-    const where: any = {};
+    const where: Prisma.ProductWhereInput = {};
     if (category) {
       where.category = category;
     }
@@ -20,7 +23,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
     
-    return NextResponse.json(products);
+    return NextResponse.json(await isAdmin() ? products : products.map(publicProduct), { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
@@ -29,7 +32,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await request.json();
+    let data;
+    try { data = productData(body); } catch (error) { return NextResponse.json({ error: (error as Error).message }, { status: 400 }); }
     
     // Auto-generate product code if not provided
     let productCode = body.productCode;
@@ -59,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     const product = await prisma.product.create({
       data: {
-        ...body,
+        ...data,
         productCode,
       },
     });

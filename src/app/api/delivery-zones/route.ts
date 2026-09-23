@@ -1,3 +1,5 @@
+import { validMoney } from '@/lib/profit';
+import { isAdmin } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -15,10 +17,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!await isAdmin()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await request.json();
     const { deliveryCharge } = body;
-    await prisma.deliveryZone.deleteMany({});
-    const zone = await prisma.deliveryZone.create({ data: { deliveryCharge } });
+    if (!validMoney(deliveryCharge)) return NextResponse.json({ error: 'Enter a valid non-negative delivery charge' }, { status: 400 });
+    const zone = await prisma.$transaction(async (tx) => {
+      const existing = await tx.deliveryZone.findFirst({ orderBy: { updatedAt: 'desc' } });
+      return existing ? tx.deliveryZone.update({ where: { id: existing.id }, data: { deliveryCharge } }) : tx.deliveryZone.create({ data: { deliveryCharge } });
+    });
 
     return NextResponse.json(zone);
   } catch (error) {

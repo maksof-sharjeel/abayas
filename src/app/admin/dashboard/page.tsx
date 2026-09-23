@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import AdminLayout from '@/components/AdminLayout';
+import { deliveredProfit } from '@/lib/profit';
 
 interface Product {
   id: string;
@@ -19,6 +20,9 @@ interface Order {
   customerName: string;
   productName: string;
   totalPrice: number;
+  itemPrice: number;
+  itemCost: number | null;
+  quantity: number;
   status: string;
   createdAt: string;
 }
@@ -47,6 +51,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState(false);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -54,7 +59,9 @@ export default function AdminDashboard() {
         const [productsRes, ordersRes] = await Promise.all([fetch('/api/products'), fetch('/api/orders')]);
         if (productsRes.ok) setProducts(await productsRes.json());
         if (ordersRes.ok) setOrders(await ordersRes.json());
+        else setOrdersError(true);
       } catch (error) {
+        setOrdersError(true);
         console.error('Error loading dashboard:', error);
       } finally {
         setLoading(false);
@@ -89,7 +96,7 @@ export default function AdminDashboard() {
       return counts;
     }, {});
 
-    return { activeOrders, revenue, monthPoints, maxRevenue, statuses, categoryCounts };
+    return { activeOrders, revenue, monthPoints, maxRevenue, statuses, categoryCounts, profit: deliveredProfit(orders) };
   }, [orders, products]);
 
   return (
@@ -107,8 +114,18 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-5 lg:gap-4">
           <div className="border border-plum-dark/10 bg-cream p-5"><p className="text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50">Total revenue</p><p className="mt-3 text-2xl font-semibold text-plum-dark">{loading ? '—' : `PKR ${analytics.revenue.toLocaleString()}`}</p><p className="mt-2 text-xs text-green-700">All active orders</p></div>
+          <section aria-label="Gross profit" className="border border-plum-dark/10 bg-cream p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50">Gross profit</p>
+            <p className={`mt-3 text-2xl font-semibold ${analytics.profit.profit != null && analytics.profit.profit < 0 ? 'text-red-700' : 'text-green-700'}`}>
+              {loading ? 'Loading...' : ordersError ? 'Unavailable' : analytics.profit.profit == null ? 'Cost not set' : 'PKR ' + analytics.profit.profit.toLocaleString()}
+            </p>
+            <p className="mt-2 text-xs text-foreground/55">Delivered orders only. Delivery excluded.</p>
+            {!loading && !ordersError && analytics.profit.margin != null && <p className="mt-1 text-xs text-foreground/70">Margin {analytics.profit.margin.toFixed(2)}%</p>}
+            {!loading && !ordersError && analytics.profit.missing > 0 && <p className="mt-2 text-xs text-amber-800">{analytics.profit.missing} delivered order(s) excluded: cost not set.</p>}
+            {!loading && ordersError && <p className="mt-2 text-xs text-red-700">Could not load orders. Please refresh.</p>}
+          </section>
           <div className="border border-plum-dark/10 bg-cream p-5"><p className="text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50">Total orders</p><p className="mt-3 text-3xl font-semibold text-plum-dark">{loading ? '—' : orders.length}</p><p className="mt-2 text-xs text-foreground/55">{analytics.activeOrders.length} active orders</p></div>
           <div className="border border-plum-dark/10 bg-cream p-5"><p className="text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50">Pending orders</p><p className="mt-3 text-3xl font-semibold text-plum-dark">{loading ? '—' : analytics.statuses.find((item) => item.status === 'Pending')?.count || 0}</p><p className="mt-2 text-xs text-gold">Needs attention</p></div>
           <div className="border border-plum-dark/10 bg-cream p-5"><p className="text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50">Products</p><p className="mt-3 text-3xl font-semibold text-plum-dark">{loading ? '—' : products.length}</p><p className="mt-2 text-xs text-foreground/55">{products.filter((product) => product.stockStatus === 'In Stock').length} in stock</p></div>
