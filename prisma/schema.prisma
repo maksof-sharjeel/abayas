@@ -62,6 +62,16 @@ model Settings {
   updatedAt           DateTime @updatedAt
 }
 
+model ContactInquiry {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  message   String
+  status    String   @default("New")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model DeliveryZone {
   id             String   @id @default(uuid())
   deliveryCharge Float

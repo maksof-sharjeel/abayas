@@ -7,7 +7,6 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useSearchParams } from 'next/navigation';
 import LoadingState from '@/components/LoadingState';
-import { buildProductWhatsAppMessage } from '@/lib/whatsapp';
 
 interface Product {
   id: string;
@@ -114,22 +113,6 @@ function ShopContent() {
                     <p className="text-[10px] md:text-sm text-plum mb-1">{product.category}</p>
                     <h3 className="font-semibold text-foreground mb-1 md:mb-2 text-xs md:text-base line-clamp-2">{product.name}</h3>
                     <p className="text-plum font-bold text-sm md:text-base mb-2 md:mb-3">PKR {product.price.toLocaleString()}</p>
-                    <div className="flex flex-col gap-2">
-                      <a
-                        href={`tel:+923122789939`}
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-blue-600 text-white text-[10px] md:text-xs font-semibold hover:bg-blue-700 transition-colors"
-                      >
-                        <span>📞</span> Call
-                      </a>
-                      <a
-                        href={`https://wa.me/923122789939?text=${encodeURIComponent(buildProductWhatsAppMessage(product, `/product/${product.id}`))}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-green-600 text-white text-[10px] md:text-xs font-semibold hover:bg-green-700 transition-colors"
-                      >
-                        <span>💬</span> WhatsApp
-                      </a>
-                    </div>
                   </div>
                 </Link>
               ))}

@@ -117,7 +117,10 @@ export default function ProductDetailPage() {
   };
 
   const handleCall = () => {
-    window.location.href = 'tel:+923122789939';
+    const message = product
+      ? `Hi, I would like to speak with someone about ${product.name} (${product.productCode || 'product'}).`
+      : 'Hi, I would like to speak with someone from SK Hand Embroidery.';
+    window.open(`https://wa.me/923122789939?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleOrderFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -238,7 +241,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
               {product.images && product.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
@@ -303,8 +306,8 @@ export default function ProductDetailPage() {
                   onClick={handleCall}
                   className="flex-1 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2"
                 >
-                  <span>📞</span>
-                  Call Karein
+                  <span>💬</span>
+                  WhatsApp Call
                 </button>
                 <button
                   onClick={handleWhatsAppOrder}
@@ -500,10 +503,7 @@ export default function ProductDetailPage() {
                   <h3 className="font-semibold text-green-800 mb-2">Order Placed Successfully!</h3>
                   <p className="text-sm text-green-700 mb-2">Your tracking code is:</p>
                   <p className="text-2xl font-bold text-green-900 mb-4">{trackingCode}</p>
-                  <p className="text-xs md:text-sm text-green-700">Save this code to track your order status.</p>
-                  <Link href="/track" className="inline-block mt-4 text-green-800 underline text-sm md:text-base">
-                    Track Your Order
-                  </Link>
+                  <p className="text-xs md:text-sm text-green-700">Save this code for any order-related support on WhatsApp.</p>
                 </div>
               )}
             </div>

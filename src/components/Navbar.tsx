@@ -9,7 +9,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-plum-dark/10 bg-cream/95 backdrop-blur">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex h-[76px] items-center justify-between">
+        <div className="flex h-19 items-center justify-between">
           <Link href="/" className="group flex items-center gap-3 text-plum-dark">
             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold text-sm font-semibold tracking-[0.18em] text-gold">SK</span>
             <span>
@@ -24,9 +24,6 @@ export default function Navbar() {
             </Link>
             <Link href="/shop" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Shop
-            </Link>
-            <Link href="/track" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
-              Track Order
             </Link>
             <Link href="/contact" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Contact
@@ -60,9 +57,6 @@ export default function Navbar() {
             </Link>
             <Link href="/shop" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Shop
-            </Link>
-            <Link href="/track" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
-              Track Order
             </Link>
             <Link href="/contact" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Contact

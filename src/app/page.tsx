@@ -55,7 +55,7 @@ export default async function Home() {
           <div className="mx-auto grid max-w-7xl grid-cols-1 items-stretch lg:grid-cols-[0.9fr_1.1fr]">
             <div className="flex flex-col justify-center px-6 py-20 sm:px-10 md:py-28 lg:px-16">
               <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-gold">Handcrafted modest wear</p>
-              <h1 className="max-w-xl font-serif text-5xl leading-[0.95] sm:text-6xl md:text-7xl">The art of feeling beautifully covered.</h1>
+              <h1 className="max-w-xl font-serif text-4xl leading-[0.98] sm:text-6xl md:text-7xl">The art of feeling beautifully covered.</h1>
               <p className="mt-7 max-w-md text-base leading-7 text-cream/70 md:text-lg">Thoughtfully made abayas with hand embroidery, fluid fabrics and a distinctly Lahore point of view.</p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link href="/shop" className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-plum-dark transition-colors hover:bg-gold-light">Shop the collection</Link>
@@ -110,7 +110,7 @@ export default async function Home() {
               <Link href="/shop" className="text-sm font-semibold text-plum underline-offset-4 hover:underline">Shop all →</Link>
             </div>
             {featuredProducts.length > 0 ? (
-              <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+              <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-6">
                 {featuredProducts.slice(0, 4).map((product) => (
                   <article key={product.id} className="group min-w-0">
                     <Link href={`/product/${product.id}`} className="relative block aspect-3/4 overflow-hidden bg-rose">

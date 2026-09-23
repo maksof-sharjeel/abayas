@@ -18,7 +18,10 @@ const menuSections = [
   },
   {
     label: 'Sales',
-    items: [{ href: '/admin/orders', label: 'Orders', icon: '☷' }],
+    items: [
+      { href: '/admin/orders', label: 'Orders', icon: '☷' },
+      { href: '/admin/inquiries', label: 'Inquiries', icon: '✉' },
+    ],
   },
   {
     label: 'Store Setup',

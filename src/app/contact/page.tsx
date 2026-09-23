@@ -9,7 +9,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const message = [
       'Hello SK Hand Embroidery, I have an inquiry.',
@@ -19,9 +19,21 @@ export default function ContactPage() {
       `Message: ${formData.message}`,
     ].join('\n');
     window.open(`https://wa.me/923122789939?text=${encodeURIComponent(message)}`, '_blank');
-    setSubmitted(true);
-    setFormData({ name: '', phone: '', message: '' });
-    window.setTimeout(() => setSubmitted(false), 4000);
+
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error('Unable to save inquiry');
+      setSubmitted(true);
+      setFormData({ name: '', phone: '', message: '' });
+      window.setTimeout(() => setSubmitted(false), 4000);
+    } catch (error) {
+      console.error('Error saving inquiry:', error);
+      alert('WhatsApp opened, but we could not save your inquiry. Please try again.');
+    }
   };
 
   return (
@@ -32,11 +44,11 @@ export default function ContactPage() {
           <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="flex flex-col justify-center px-5 py-16 sm:px-8 md:py-24 lg:px-16">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-gold">Come say hello</p>
-              <h1 className="mt-4 max-w-xl font-serif text-5xl leading-[0.98] md:text-7xl">Let&apos;s find your next favourite piece.</h1>
+              <h1 className="mt-4 max-w-xl font-serif text-4xl leading-[0.98] sm:text-5xl md:text-7xl">Let&apos;s find your next favourite piece.</h1>
               <p className="mt-7 max-w-lg text-base leading-7 text-cream/70 md:text-lg">Whether you need help choosing a size, want to customise a detail, or simply want to see what is new, our studio team is here for you.</p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <a href="https://wa.me/923122789939" target="_blank" rel="noopener noreferrer" className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-plum-dark transition-colors hover:bg-gold-light">Chat on WhatsApp</a>
-                <a href="tel:+923122789939" className="rounded-full border border-cream/35 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream/10">Call the studio</a>
+                <a href="https://wa.me/923122789939?text=Hi%2C%20I%20would%20like%20to%20speak%20with%20the%20studio%20team." target="_blank" rel="noopener noreferrer" className="rounded-full border border-cream/35 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream/10">WhatsApp Call</a>
               </div>
             </div>
             <div className="relative min-h-90 overflow-hidden lg:min-h-125">
@@ -50,14 +62,14 @@ export default function ContactPage() {
         <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 md:py-20">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             <a href="https://wa.me/923122789939" target="_blank" rel="noopener noreferrer" className="group border border-plum-dark/10 bg-cream p-6 transition-colors hover:bg-rose-light"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Fastest reply</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">WhatsApp</h2><p className="mt-2 text-sm text-foreground/60">0312 2789939</p><span className="mt-6 block text-sm font-semibold text-plum">Start a conversation →</span></a>
-            <a href="tel:+923122789939" className="group border border-plum-dark/10 bg-cream p-6 transition-colors hover:bg-rose-light"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Speak with us</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">Call the studio</h2><p className="mt-2 text-sm text-foreground/60">Mon–Sat, 11:00–19:00</p><span className="mt-6 block text-sm font-semibold text-plum">Call now →</span></a>
+            <a href="https://wa.me/923122789939?text=Hi%2C%20I%20would%20like%20to%20speak%20with%20the%20studio%20team." target="_blank" rel="noopener noreferrer" className="group border border-plum-dark/10 bg-cream p-6 transition-colors hover:bg-rose-light"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Speak with us</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">WhatsApp call</h2><p className="mt-2 text-sm text-foreground/60">Mon–Sat, 11:00–19:00</p><span className="mt-6 block text-sm font-semibold text-plum">Start WhatsApp →</span></a>
             <div className="border border-plum-dark/10 bg-cream p-6"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Studio details</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">Visit us</h2><p className="mt-2 text-sm leading-6 text-foreground/60">Lahore, Pakistan<br />Private appointments available</p><span className="mt-6 block text-sm font-semibold text-plum">By appointment</span></div>
           </div>
         </section>
 
         <section className="bg-rose-light/60 py-14 md:py-20">
           <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-5 sm:px-8 md:grid-cols-[0.8fr_1.2fr] md:items-start">
-            <div><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">Personal service</p><h2 className="mt-4 font-serif text-4xl leading-tight text-plum-dark md:text-5xl">Tell us what you&apos;re looking for.</h2><p className="mt-5 max-w-md text-sm leading-7 text-foreground/65">Share your question below and we&apos;ll open a WhatsApp conversation with your details already prepared.</p><div className="mt-8 border-l-2 border-gold pl-4 text-sm leading-6 text-foreground/65"><p>Size guidance</p><p>Custom colour requests</p><p>Order and delivery help</p></div></div>
+            <div><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">Personal service</p><h2 className="mt-4 font-serif text-3xl leading-tight text-plum-dark sm:text-4xl md:text-5xl">Tell us what you&apos;re looking for.</h2><p className="mt-5 max-w-md text-sm leading-7 text-foreground/65">Share your question below and we&apos;ll open a WhatsApp conversation with your details already prepared.</p><div className="mt-8 border-l-2 border-gold pl-4 text-sm leading-6 text-foreground/65"><p>Size guidance</p><p>Custom colour requests</p><p>Order and delivery help</p></div></div>
             <form onSubmit={handleSubmit} className="border border-plum-dark/10 bg-cream p-6 md:p-8">
               {submitted && <div className="mb-5 border border-green-200 bg-green-50 p-3 text-sm text-green-800">Your WhatsApp message is ready to send.</div>}
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
