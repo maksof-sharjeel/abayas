@@ -112,7 +112,7 @@ export default function OrdersPage() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading orders" />;
+    return <AdminLayout><LoadingState label="Loading orders" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {

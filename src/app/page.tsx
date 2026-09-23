@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import HeroCarousel from '@/components/HeroCarousel';
 
 interface Product {
   id: string;
@@ -66,14 +67,7 @@ export default async function Home() {
                 <span><strong className="block text-lg font-normal text-cream">02</strong>Made to order</span>
               </div>
             </div>
-            <div className="relative min-h-105 overflow-hidden lg:min-h-155">
-              <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=1200&q=85" alt="Woman wearing an elegant black abaya" className="motion-image absolute inset-0 h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-linear-to-r from-plum-dark/20 via-transparent to-plum-dark/10" />
-              <div className="motion-drift absolute bottom-7 left-7 border border-cream/40 bg-plum-dark/35 px-4 py-3 backdrop-blur-sm">
-                <p className="text-[10px] uppercase tracking-[0.22em] text-gold">The new edit</p>
-                <p className="mt-1 font-serif text-xl text-cream">Noor / 2026</p>
-              </div>
-            </div>
+            <HeroCarousel />
           </div>
         </section>
 

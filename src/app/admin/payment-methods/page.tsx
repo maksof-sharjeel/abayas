@@ -178,7 +178,7 @@ export default function PaymentMethodsPage() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading payment methods" />;
+    return <AdminLayout><LoadingState label="Loading payment methods" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {

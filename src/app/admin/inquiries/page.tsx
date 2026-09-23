@@ -31,7 +31,7 @@ export default function InquiriesPage() {
     fetchInquiries();
   }, []);
 
-  if (loading) return <LoadingState label="Loading inquiries" />;
+  if (loading) return <AdminLayout><LoadingState label="Loading inquiries" fullScreen={false} /></AdminLayout>;
 
   return (
     <AdminLayout>

@@ -74,7 +74,7 @@ export default function AdminProducts() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading products" />;
+    return <AdminLayout><LoadingState label="Loading products" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {

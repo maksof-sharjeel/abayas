@@ -69,6 +69,13 @@ CLOUDINARY_API_SECRET=your-api-secret
 # NextAuth
 NEXTAUTH_SECRET=your-secret-key-generate-with-openssl-rand-base64-32
 NEXTAUTH_URL=http://localhost:3000
+
+# Admin password reset email (SMTP)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASSWORD=your-smtp-password
+SMTP_FROM=your-email@example.com
 ```
 
 ### 3. Cloudinary Setup
@@ -171,6 +178,7 @@ src/
 - `CLOUDINARY_API_SECRET` (Cloudinary API secret)
 - `NEXTAUTH_SECRET` (generate with `openssl rand -base64 32`)
 - `NEXTAUTH_URL` (your production domain)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` (required for admin password reset emails)
 
 ## WhatsApp Integration
 

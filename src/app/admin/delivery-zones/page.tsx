@@ -82,7 +82,7 @@ export default function DeliveryZonesPage() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading delivery zones" />;
+    return <AdminLayout><LoadingState label="Loading delivery zones" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {

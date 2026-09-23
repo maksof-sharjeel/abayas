@@ -90,7 +90,7 @@ export default function AdminSettings() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading settings" />;
+    return <AdminLayout><LoadingState label="Loading settings" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {

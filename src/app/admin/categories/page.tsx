@@ -3,7 +3,6 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import AdminLayout from '@/components/AdminLayout';
 import LoadingState from '@/components/LoadingState';
 
@@ -97,7 +96,7 @@ export default function AdminCategories() {
   };
 
   if (status === 'loading' || loading) {
-    return <LoadingState label="Loading categories" />;
+    return <AdminLayout><LoadingState label="Loading categories" fullScreen={false} /></AdminLayout>;
   }
 
   if (!session) {
@@ -173,7 +172,7 @@ export default function AdminCategories() {
 
         <div className="bg-cream rounded-lg overflow-hidden border border-rose/20">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[500px]">
+            <table className="w-full min-w-125">
               <thead className="bg-rose-light">
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Name</th>

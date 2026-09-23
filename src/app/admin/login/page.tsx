@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
         router.push('/admin/dashboard');
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -95,6 +95,11 @@ export default function AdminLoginPage() {
         </form>
         
         <p className="mt-6 text-center text-sm text-foreground/70">
+          <Link href="/admin/forgot-password" className="text-plum hover:text-plum-dark">
+            Forgot password?
+          </Link>
+        </p>
+        <p className="mt-3 text-center text-sm text-foreground/70">
           First time?{' '}
           <Link href="/admin/signup" className="text-plum hover:text-plum-dark">
             Create admin account
