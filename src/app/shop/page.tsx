@@ -85,9 +85,8 @@ function ShopContent() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {filteredProducts.map((product) => (
-                <Link
+                <article
                   key={product.id}
-                  href={`/product/${product.id}`}
                   className="bg-cream rounded-lg md:rounded-xl overflow-hidden hover:shadow-lg transition-shadow transform hover:-translate-y-1 border border-rose/20"
                 >
                   <div className="aspect-square bg-rose-light relative">
@@ -113,8 +112,14 @@ function ShopContent() {
                     <p className="text-[10px] md:text-sm text-plum mb-1">{product.category}</p>
                     <h3 className="font-semibold text-foreground mb-1 md:mb-2 text-xs md:text-base line-clamp-2">{product.name}</h3>
                     <p className="text-plum font-bold text-sm md:text-base mb-2 md:mb-3">PKR {product.price.toLocaleString()}</p>
+                    <Link
+                      href={`/product/${product.id}`}
+                      className="block w-full rounded-full bg-plum-dark py-2.5 text-center text-xs font-semibold text-cream transition-colors hover:bg-plum md:text-sm"
+                    >
+                      View Details
+                    </Link>
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           )}
