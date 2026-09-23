@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useSearchParams } from 'next/navigation';
+import LoadingState from '@/components/LoadingState';
+import { buildProductWhatsAppMessage } from '@/lib/whatsapp';
 
 interface Product {
   id: string;
@@ -13,17 +16,24 @@ interface Product {
   category: string;
   price: number;
   images: string[];
+  description?: string;
+  fabric?: string;
+  sizes?: string[];
   stockStatus: string;
 }
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
   
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam || 'All');
+  const [selectedCategoryOverride, setSelectedCategoryOverride] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const selectedCategory = selectedCategoryOverride || categoryParam || 'All';
+  const slugify = (value: string) => value.toLowerCase().replace(/\s+/g, '-');
+  const filteredProducts = selectedCategory === 'All'
+    ? products
+    : products.filter((product) => slugify(product.category) === selectedCategory || product.category === selectedCategory);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -32,7 +42,6 @@ export default function ShopPage() {
         if (res.ok) {
           const data = await res.json();
           setProducts(data);
-          setFilteredProducts(data);
         }
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -43,21 +52,7 @@ export default function ShopPage() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
-    }
-  }, [categoryParam]);
-
-  useEffect(() => {
-    if (selectedCategory === 'All') {
-      setFilteredProducts(products);
-    } else {
-      setFilteredProducts(products.filter(p => p.category === selectedCategory));
-    }
-  }, [selectedCategory, products]);
-
-  const categories = ['All', 'Plain', 'Design', 'Simple'];
+  const categories = ['All', 'Everyday Edit', 'Hand Embroidered', 'Occasion', 'Minimal'];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -72,7 +67,7 @@ export default function ShopPage() {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategoryOverride(category === 'All' ? 'All' : slugify(category))}
                 className={`px-4 md:px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base ${
                   selectedCategory === category
                     ? 'bg-plum text-cream'
@@ -85,7 +80,7 @@ export default function ShopPage() {
           </div>
 
           {loading ? (
-            <p className="text-center text-foreground/60 text-sm md:text-base">Loading products...</p>
+            <LoadingState label="Loading collection" fullScreen={false} />
           ) : filteredProducts.length === 0 ? (
             <p className="text-center text-foreground/60 text-sm md:text-base">No products found</p>
           ) : (
@@ -127,7 +122,7 @@ export default function ShopPage() {
                         <span>📞</span> Call
                       </a>
                       <a
-                        href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (${product.productCode || ''}) - PKR ${product.price.toLocaleString()}`)}`}
+                        href={`https://wa.me/923122789939?text=${encodeURIComponent(buildProductWhatsAppMessage(product, `/product/${product.id}`))}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-green-600 text-white text-[10px] md:text-xs font-semibold hover:bg-green-700 transition-colors"
@@ -145,5 +140,13 @@ export default function ShopPage() {
       
       <Footer />
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={<LoadingState label="Opening collection" />}>
+      <ShopContent />
+    </Suspense>
   );
 }

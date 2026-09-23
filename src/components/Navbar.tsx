@@ -7,31 +7,38 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-cream border-b border-rose/20 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 md:h-16">
-          <Link href="/" className="font-serif text-xl md:text-2xl text-plum-dark font-bold">
-            SK Hand Embroidery
+    <nav className="sticky top-0 z-50 border-b border-plum-dark/10 bg-cream/95 backdrop-blur">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="flex h-[76px] items-center justify-between">
+          <Link href="/" className="group flex items-center gap-3 text-plum-dark">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold text-sm font-semibold tracking-[0.18em] text-gold">SK</span>
+            <span>
+              <span className="block font-serif text-lg font-semibold leading-none md:text-xl">SK Hand Embroidery</span>
+              <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.28em] text-plum/70">Lahore • Since 2018</span>
+            </span>
           </Link>
           
-          <div className="hidden md:flex space-x-6 lg:space-x-8">
-            <Link href="/" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
+          <div className="hidden items-center gap-8 md:flex">
+            <Link href="/" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Home
             </Link>
-            <Link href="/shop" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
+            <Link href="/shop" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Shop
             </Link>
-            <Link href="/track" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
+            <Link href="/track" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Track Order
             </Link>
-            <Link href="/contact" className="text-sm md:text-base text-foreground hover:text-plum transition-colors">
+            <Link href="/contact" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Contact
+            </Link>
+            <Link href="/shop" className="rounded-full bg-plum-dark px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-plum">
+              Explore collection
             </Link>
           </div>
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-foreground p-1"
+            className="p-1 text-foreground md:hidden"
             aria-label="Toggle menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,18 +53,18 @@ export default function Navbar() {
       </div>
       
       {isOpen && (
-        <div className="md:hidden bg-cream border-t border-rose/20">
-          <div className="px-4 py-3 space-y-2">
-            <Link href="/" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
+        <div className="border-t border-plum-dark/10 bg-cream md:hidden">
+          <div className="space-y-2 px-5 py-4">
+            <Link href="/" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Home
             </Link>
-            <Link href="/shop" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
+            <Link href="/shop" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Shop
             </Link>
-            <Link href="/track" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
+            <Link href="/track" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Track Order
             </Link>
-            <Link href="/contact" className="block py-2 text-sm md:text-base text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
+            <Link href="/contact" className="block py-2 text-sm text-foreground hover:text-plum" onClick={() => setIsOpen(false)}>
               Contact
             </Link>
           </div>

@@ -3,15 +3,16 @@ import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const { name, instructions, isActive } = body;
+    const { name, accountTitle, accountNumber, ibanNumber, bank, instructions, isActive } = body;
 
     const method = await prisma.paymentMethod.update({
-      where: { id: params.id },
-      data: { name, instructions, isActive },
+      where: { id },
+      data: { name, accountTitle, accountNumber, ibanNumber, bank, instructions, isActive },
     });
 
     return NextResponse.json(method);
@@ -23,12 +24,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if method has orders
     const orderCount = await prisma.order.count({
-      where: { paymentMethodId: params.id },
+      where: { paymentMethodId: id },
     });
 
     if (orderCount > 0) {
@@ -39,7 +41,7 @@ export async function DELETE(
     }
 
     await prisma.paymentMethod.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });

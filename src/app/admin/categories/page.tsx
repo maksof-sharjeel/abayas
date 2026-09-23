@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import AdminLayout from '@/components/AdminLayout';
+import LoadingState from '@/components/LoadingState';
 
 interface Category {
   id: string;
@@ -95,7 +97,7 @@ export default function AdminCategories() {
   };
 
   if (status === 'loading' || loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingState label="Loading categories" />;
   }
 
   if (!session) {
@@ -103,19 +105,8 @@ export default function AdminCategories() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-4 md:px-6 py-3 md:py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-lg md:text-2xl hover:text-gold">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-3 md:gap-4">
-            <span className="text-xs md:text-sm">{session.user?.email}</span>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+    <AdminLayout>
+      <div className="p-6 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="font-serif text-2xl md:text-3xl text-plum-dark">Categories</h1>
           <button
@@ -220,6 +211,6 @@ export default function AdminCategories() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

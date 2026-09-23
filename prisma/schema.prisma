@@ -64,16 +64,19 @@ model Settings {
 
 model DeliveryZone {
   id             String   @id @default(uuid())
-  cityName       String   @unique
   deliveryCharge Float
   updatedAt      DateTime @updatedAt
 }
 
 model PaymentMethod {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  instructions String?
-  isActive    Boolean  @default(true)
+  id            String   @id @default(uuid())
+  name          String   @unique
+  accountTitle  String?
+  accountNumber String?
+  ibanNumber    String?
+  bank          String?
+  instructions  String?
+  isActive      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]

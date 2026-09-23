@@ -3,14 +3,21 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import AdminLayout from '@/components/AdminLayout';
+import ProductFormModal from '@/components/ProductFormModal';
+import LoadingState from '@/components/LoadingState';
 
 interface Product {
   id: string;
+  productCode?: string;
   name: string;
+  description: string;
   price: number;
   category: string;
-  stockStatus: string;
+  fabric: string;
+  images: string[];
+  sizes: string[];
+  stockStatus: 'In Stock' | 'Out of Stock';
   featured: boolean;
 }
 
@@ -19,6 +26,8 @@ export default function AdminProducts() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -56,8 +65,16 @@ export default function AdminProducts() {
     }
   };
 
+  const openEditModal = async (id: string) => {
+    const response = await fetch(`/api/products/${id}`);
+    if (response.ok) {
+      setEditingProduct(await response.json());
+      setModalOpen(true);
+    }
+  };
+
   if (status === 'loading' || loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingState label="Loading products" />;
   }
 
   if (!session) {
@@ -65,32 +82,22 @@ export default function AdminProducts() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-4 md:px-6 py-3 md:py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-lg md:text-2xl hover:text-gold">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-3 md:gap-4">
-            <span className="text-xs md:text-sm">{session.user?.email}</span>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+    <AdminLayout>
+      <div className="p-6 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="font-serif text-2xl md:text-3xl text-plum-dark">Products</h1>
-          <Link
-            href="/admin/products/new"
-            className="bg-plum text-cream px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
+          <button
+            type="button"
+            onClick={() => { setEditingProduct(null); setModalOpen(true); }}
+            className="rounded-full bg-plum-dark px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-plum"
           >
             Add New Product
-          </Link>
+          </button>
         </div>
 
         <div className="bg-cream rounded-lg overflow-hidden border border-rose/20">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+            <table className="w-full min-w-150">
               <thead className="bg-rose-light">
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Name</th>
@@ -126,12 +133,13 @@ export default function AdminProducts() {
                       </td>
                       <td className="px-4 md:px-6 py-3 md:py-4">
                         <div className="flex gap-2">
-                          <Link
-                            href={`/admin/products/${product.id}`}
-                            className="text-plum hover:text-plum-dark font-medium text-xs md:text-sm"
+                          <button
+                            type="button"
+                            onClick={() => openEditModal(product.id)}
+                            className="text-xs font-medium text-plum hover:text-plum-dark md:text-sm"
                           >
                             Edit
-                          </Link>
+                          </button>
                           <button
                             onClick={() => handleDelete(product.id)}
                             className="text-red-600 hover:text-red-700 font-medium text-xs md:text-sm"
@@ -148,6 +156,7 @@ export default function AdminProducts() {
           </div>
         </div>
       </div>
-    </div>
+      {modalOpen && <ProductFormModal product={editingProduct} onClose={() => setModalOpen(false)} onSaved={(savedProduct) => setProducts((current) => editingProduct ? current.map((product) => product.id === savedProduct.id ? savedProduct : product) : [savedProduct, ...current])} />}
+    </AdminLayout>
   );
 }

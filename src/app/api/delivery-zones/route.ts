@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const zones = await prisma.deliveryZone.findMany({
-      orderBy: { cityName: 'asc' },
+    const setting = await prisma.deliveryZone.findFirst({
+      orderBy: { updatedAt: 'desc' },
     });
-    return NextResponse.json(zones);
+    return NextResponse.json(setting || { id: null, deliveryCharge: 0 });
   } catch (error) {
     console.error('Error fetching delivery zones:', error);
     return NextResponse.json({ error: 'Failed to fetch delivery zones' }, { status: 500 });
@@ -16,14 +16,9 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { cityName, deliveryCharge } = body;
-
-    const zone = await prisma.deliveryZone.create({
-      data: {
-        cityName,
-        deliveryCharge,
-      },
-    });
+    const { deliveryCharge } = body;
+    await prisma.deliveryZone.deleteMany({});
+    const zone = await prisma.deliveryZone.create({ data: { deliveryCharge } });
 
     return NextResponse.json(zone);
   } catch (error) {

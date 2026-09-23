@@ -2,11 +2,26 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-async function getFeaturedProducts() {
+interface Product {
+  id: string;
+  productCode?: string;
+  name: string;
+  category: string;
+  price: number;
+  images: string[];
+  stockStatus: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
+async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products?featured=true`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/products?featured=true`, { cache: 'no-store' });
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -14,11 +29,9 @@ async function getFeaturedProducts() {
   }
 }
 
-async function getCategories() {
+async function getCategories(): Promise<Category[]> {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/categories`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/categories`, { cache: 'no-store' });
     if (!res.ok) return [];
     return res.json();
   } catch {
@@ -27,168 +40,98 @@ async function getCategories() {
 }
 
 export default async function Home() {
-  const featuredProducts = await getFeaturedProducts();
-  const categories = await getCategories();
+  const [featuredProducts, categories] = await Promise.all([getFeaturedProducts(), getCategories()]);
+  const visibleCategories = categories.length > 0 ? categories.slice(0, 4) : [
+    { id: 'plain', name: 'Everyday Edit', slug: 'plain', description: 'Quiet, effortless layers' },
+    { id: 'design', name: 'Embroidered', slug: 'design', description: 'Hand-finished statement pieces' },
+    { id: 'simple', name: 'Minimal', slug: 'simple', description: 'Refined silhouettes for every day' },
+  ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-rose-light via-rose to-mauve py-12 md:py-20 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-5 left-5 w-32 h-32 md:w-64 md:h-64 bg-gold rounded-full blur-3xl"></div>
-            <div className="absolute bottom-5 right-5 w-48 h-48 md:w-96 md:h-96 bg-plum rounded-full blur-3xl"></div>
-          </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-7xl text-plum-dark mb-4 md:mb-6">
-              SK Hand Embroidery Boutique
-            </h1>
-            <p className="text-sm md:text-base lg:text-lg xl:text-xl text-foreground/90 mb-6 md:mb-8 max-w-xl md:max-w-2xl mx-auto leading-relaxed px-4">
-              Discover exquisite hand-embroidered abayas and modest wear crafted with love and care
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-              <Link
-                href="/shop"
-                className="inline-block bg-plum text-cream px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-plum-dark transition-all transform hover:scale-105 shadow-lg text-sm md:text-base"
-              >
-                Shop Collection
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-block border-2 border-plum text-plum px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-plum hover:text-cream transition-all text-sm md:text-base"
-              >
-                Contact Us
-              </Link>
+        <section className="relative overflow-hidden bg-plum-dark text-cream">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 items-stretch lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="flex flex-col justify-center px-6 py-20 sm:px-10 md:py-28 lg:px-16">
+              <p className="mb-6 text-xs font-semibold uppercase tracking-[0.28em] text-gold">Handcrafted modest wear</p>
+              <h1 className="max-w-xl font-serif text-5xl leading-[0.95] sm:text-6xl md:text-7xl">The art of feeling beautifully covered.</h1>
+              <p className="mt-7 max-w-md text-base leading-7 text-cream/70 md:text-lg">Thoughtfully made abayas with hand embroidery, fluid fabrics and a distinctly Lahore point of view.</p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link href="/shop" className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-plum-dark transition-colors hover:bg-gold-light">Shop the collection</Link>
+                <Link href="/contact" className="rounded-full border border-cream/35 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream/10">Visit the studio</Link>
+              </div>
+              <div className="mt-14 flex gap-8 border-t border-cream/15 pt-5 text-xs text-cream/55">
+                <span><strong className="block text-lg font-normal text-cream">01</strong>Small-batch pieces</span>
+                <span><strong className="block text-lg font-normal text-cream">02</strong>Made to order</span>
+              </div>
+            </div>
+            <div className="relative min-h-105 overflow-hidden lg:min-h-155">
+              <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=1200&q=85" alt="Woman wearing an elegant black abaya" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-linear-to-r from-plum-dark/20 via-transparent to-plum-dark/10" />
+              <div className="absolute bottom-7 left-7 border border-cream/40 bg-plum-dark/35 px-4 py-3 backdrop-blur-sm">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-gold">The new edit</p>
+                <p className="mt-1 font-serif text-xl text-cream">Noor / 2026</p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Category Preview */}
-        <section className="py-10 md:py-12 lg:py-16 bg-cream">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-2xl md:text-3xl text-plum-dark mb-6 md:mb-8 text-center">Browse by Category</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {categories.length > 0 ? (
-                categories.map((category: any) => (
-                  <Link
-                    key={category.id}
-                    href={`/shop?category=${category.slug}`}
-                    className="group bg-gradient-to-br from-rose-light to-rose rounded-lg p-6 md:p-8 text-center hover:shadow-xl transition-all transform hover:-translate-y-2 border border-rose/30"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-plum/20 rounded-full flex items-center justify-center group-hover:bg-plum/30 transition-colors">
-                      <span className="text-2xl md:text-3xl">✨</span>
-                    </div>
-                    <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-2 group-hover:text-plum transition-colors">{category.name}</h3>
-                    <p className="text-foreground/70 text-xs md:text-sm">{category.description || 'View collection'}</p>
-                  </Link>
-                ))
-              ) : (
-                <>
-                  <Link
-                    href="/shop?category=Plain"
-                    className="group bg-gradient-to-br from-rose-light to-rose rounded-lg p-6 md:p-8 text-center hover:shadow-xl transition-all transform hover:-translate-y-2 border border-rose/30"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-plum/20 rounded-full flex items-center justify-center group-hover:bg-plum/30 transition-colors">
-                      <span className="text-2xl md:text-3xl">🌸</span>
-                    </div>
-                    <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-2 group-hover:text-plum transition-colors">Plain</h3>
-                    <p className="text-foreground/70 text-xs md:text-sm">Elegant simplicity</p>
-                  </Link>
-                  <Link
-                    href="/shop?category=Design"
-                    className="group bg-gradient-to-br from-rose-light to-rose rounded-lg p-6 md:p-8 text-center hover:shadow-xl transition-all transform hover:-translate-y-2 border border-rose/30"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-plum/20 rounded-full flex items-center justify-center group-hover:bg-plum/30 transition-colors">
-                      <span className="text-2xl md:text-3xl">🎨</span>
-                    </div>
-                    <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-2 group-hover:text-plum transition-colors">Design</h3>
-                    <p className="text-foreground/70 text-xs md:text-sm">Embroidered elegance</p>
-                  </Link>
-                  <Link
-                    href="/shop?category=Simple"
-                    className="group bg-gradient-to-br from-rose-light to-rose rounded-lg p-6 md:p-8 text-center hover:shadow-xl transition-all transform hover:-translate-y-2 border border-rose/30"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-plum/20 rounded-full flex items-center justify-center group-hover:bg-plum/30 transition-colors">
-                      <span className="text-2xl md:text-3xl">💫</span>
-                    </div>
-                    <h3 className="font-serif text-xl md:text-2xl text-plum-dark mb-2 group-hover:text-plum transition-colors">Simple</h3>
-                    <p className="text-foreground/70 text-xs md:text-sm">Everyday comfort</p>
-                  </Link>
-                </>
-              )}
-            </div>
+        <section className="border-b border-plum-dark/10 bg-cream">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-plum-dark/10 px-5 py-7 text-center md:grid-cols-4 md:px-8">
+            <div className="px-3 py-2"><p className="text-sm font-semibold text-plum-dark">Hand finished</p><p className="mt-1 text-xs text-foreground/55">Every detail matters</p></div>
+            <div className="px-3 py-2"><p className="text-sm font-semibold text-plum-dark">Premium fabrics</p><p className="mt-1 text-xs text-foreground/55">Chosen for comfort</p></div>
+            <div className="px-3 py-2"><p className="text-sm font-semibold text-plum-dark">Nationwide delivery</p><p className="mt-1 text-xs text-foreground/55">Across Pakistan</p></div>
+            <div className="px-3 py-2"><p className="text-sm font-semibold text-plum-dark">Personal service</p><p className="mt-1 text-xs text-foreground/55">Here on WhatsApp</p></div>
           </div>
         </section>
 
-        {/* Featured Products */}
-        <section className="py-10 md:py-12 lg:py-16 bg-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-2xl md:text-3xl text-plum-dark mb-6 md:mb-8 text-center">Featured Collection</h2>
+        <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 md:py-24">
+          <div className="flex items-end justify-between gap-4">
+            <div><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">Curated for you</p><h2 className="mt-3 font-serif text-4xl text-plum-dark md:text-5xl">Shop by mood</h2></div>
+            <Link href="/shop" className="hidden text-sm font-semibold text-plum underline-offset-4 hover:underline sm:block">View all pieces →</Link>
+          </div>
+          <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden border border-plum-dark/10 bg-plum-dark/10 sm:grid-cols-2 lg:grid-cols-4">
+            {visibleCategories.map((category, index) => (
+              <Link key={category.id} href={`/shop?category=${category.slug}`} className="group bg-cream p-7 transition-colors hover:bg-rose-light">
+                <span className="text-xs text-plum/70">0{index + 1}</span>
+                <h3 className="mt-16 font-serif text-2xl text-plum-dark group-hover:text-plum">{category.name}</h3>
+                <p className="mt-2 text-sm text-foreground/60">{category.description || 'Explore the collection'}</p>
+                <span className="mt-7 block text-sm font-semibold text-plum">Explore <span className="transition-transform group-hover:translate-x-1">→</span></span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-rose-light/60 py-16 md:py-24">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <div className="flex items-end justify-between gap-4">
+              <div><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">Just in</p><h2 className="mt-3 font-serif text-4xl text-plum-dark md:text-5xl">The edit</h2></div>
+              <Link href="/shop" className="text-sm font-semibold text-plum underline-offset-4 hover:underline">Shop all →</Link>
+            </div>
             {featuredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-                {featuredProducts.map((product: any) => (
-                  <Link
-                    key={product.id}
-                    href={`/product/${product.id}`}
-                    className="group bg-cream rounded-lg md:rounded-xl overflow-hidden hover:shadow-2xl transition-all transform hover:-translate-y-2 border border-rose/20"
-                  >
-                    <div className="aspect-square bg-rose-light relative overflow-hidden">
-                      {product.images && product.images[0] && (
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
-                      )}
-                      <div className="absolute top-2 left-2 md:top-3 md:left-3 bg-gold text-plum-dark px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[10px] md:text-xs font-semibold">
-                        Featured
-                      </div>
-                    </div>
-                    <div className="p-3 md:p-5">
-                      <p className="text-[10px] md:text-xs text-plum/70 mb-1 font-medium">{product.productCode || ''}</p>
-                      <p className="text-[10px] md:text-sm text-plum mb-1 font-medium">{product.category}</p>
-                      <h3 className="font-semibold text-foreground mb-1 md:mb-2 line-clamp-2 text-xs md:text-base group-hover:text-plum transition-colors">{product.name}</h3>
-                      <div className="flex items-center justify-between mb-2 md:mb-3">
-                        <p className="text-plum font-bold text-sm md:text-lg">PKR {product.price.toLocaleString()}</p>
-                        <span className="text-[10px] md:text-xs text-foreground/60">View →</span>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <a
-                          href={`tel:+923122789939`}
-                          className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-blue-600 text-white text-[10px] md:text-xs font-semibold hover:bg-blue-700 transition-colors"
-                        >
-                          <span>📞</span> Call
-                        </a>
-                        <a
-                          href={`https://wa.me/923122789939?text=${encodeURIComponent(`Hi, I'm interested in: ${product.name} (${product.productCode || ''}) - PKR ${product.price.toLocaleString()}`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-green-600 text-white text-[10px] md:text-xs font-semibold hover:bg-green-700 transition-colors"
-                        >
-                          <span>💬</span> WhatsApp
-                        </a>
-                      </div>
-                    </div>
-                  </Link>
+              <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+                {featuredProducts.slice(0, 4).map((product) => (
+                  <article key={product.id} className="group min-w-0">
+                    <Link href={`/product/${product.id}`} className="relative block aspect-3/4 overflow-hidden bg-rose">
+                      {product.images?.[0] ? <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-sm text-foreground/50">No image</div>}
+                      <span className="absolute left-3 top-3 bg-cream px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-plum-dark">{product.category}</span>
+                    </Link>
+                    <div className="pt-4"><p className="text-xs text-foreground/50">{product.productCode || 'SK EDIT'}</p><Link href={`/product/${product.id}`} className="mt-1 block font-serif text-lg text-plum-dark hover:text-plum">{product.name}</Link><p className="mt-2 text-sm font-semibold text-plum">PKR {product.price.toLocaleString()}</p></div>
+                  </article>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-foreground/60 text-sm md:text-base">No featured products yet</p>
+              <div className="mt-10 border border-dashed border-plum/30 bg-cream/50 p-12 text-center"><p className="font-serif text-2xl text-plum-dark">Your first edit is almost here.</p><Link href="/admin/products" className="mt-4 inline-block text-sm font-semibold text-plum underline">Add products from admin</Link></div>
             )}
-            <div className="text-center mt-6 md:mt-8">
-              <Link
-                href="/shop"
-                className="inline-block border-2 border-plum text-plum px-6 py-3 md:px-8 md:py-3 rounded-full font-semibold hover:bg-plum hover:text-cream transition-colors text-sm md:text-base"
-              >
-                View All Products
-              </Link>
-            </div>
           </div>
         </section>
+
+        <section className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-5 py-16 sm:px-8 md:grid-cols-2 md:py-24">
+          <div className="relative aspect-4/3 overflow-hidden"><img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1000&q=85" alt="Detail of premium flowing fabric" className="h-full w-full object-cover" /></div>
+          <div className="max-w-lg"><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">The SK standard</p><h2 className="mt-4 font-serif text-4xl leading-tight text-plum-dark md:text-5xl">Quiet luxury, made personal.</h2><p className="mt-5 leading-7 text-foreground/65">We believe modest dressing can be expressive. Each piece is finished in our studio with considered details, honest fabrics and the kind of fit you reach for again and again.</p><Link href="/contact" className="mt-7 inline-block border-b border-plum pb-1 text-sm font-semibold text-plum">Meet the atelier →</Link></div>
+        </section>
       </main>
-      
       <Footer />
     </div>
   );

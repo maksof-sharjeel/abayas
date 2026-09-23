@@ -4,6 +4,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import AdminLayout from '@/components/AdminLayout';
+import LoadingState from '@/components/LoadingState';
 
 interface Settings {
   id: string;
@@ -88,7 +90,7 @@ export default function AdminSettings() {
   };
 
   if (status === 'loading' || loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingState label="Loading settings" />;
   }
 
   if (!session) {
@@ -96,24 +98,17 @@ export default function AdminSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-2xl hover:text-gold">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm">{session.user?.email}</span>
-          </div>
+    <AdminLayout>
+      <div className="mx-auto max-w-3xl p-5 md:p-8">
+        <div className="mb-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-plum">Store setup</p>
+          <h1 className="mt-2 font-serif text-4xl text-plum-dark">Settings</h1>
+          <p className="mt-2 text-sm text-foreground/60">Keep your customer-facing details current.</p>
         </div>
-      </nav>
-
-      <div className="max-w-3xl mx-auto px-6 py-8">
-        <h1 className="font-serif text-3xl text-plum-dark mb-8">Settings</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-cream rounded-lg p-6 border border-rose/20">
-            <h2 className="font-serif text-xl text-plum-dark mb-4">Contact Information</h2>
+          <div className="border border-plum-dark/10 bg-cream p-6">
+            <h2 className="font-serif text-2xl text-plum-dark mb-4">Contact Information</h2>
             
             <div className="space-y-4">
               <div>
@@ -132,8 +127,8 @@ export default function AdminSettings() {
             </div>
           </div>
 
-          <div className="bg-cream rounded-lg p-6 border border-rose/20">
-            <h2 className="font-serif text-xl text-plum-dark mb-4">Boutique Description</h2>
+          <div className="border border-plum-dark/10 bg-cream p-6">
+            <h2 className="font-serif text-2xl text-plum-dark mb-4">Boutique Description</h2>
             
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">About Text</label>
@@ -148,8 +143,8 @@ export default function AdminSettings() {
             </div>
           </div>
 
-          <div className="bg-cream rounded-lg p-6 border border-rose/20">
-            <h2 className="font-serif text-xl text-plum-dark mb-4">Social Media Links</h2>
+          <div className="border border-plum-dark/10 bg-cream p-6">
+            <h2 className="font-serif text-2xl text-plum-dark mb-4">Social Media Links</h2>
             
             <div className="space-y-4">
               <div>
@@ -207,6 +202,6 @@ export default function AdminSettings() {
           </div>
         </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

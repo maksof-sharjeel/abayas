@@ -2,19 +2,19 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-plum-dark text-cream py-6 md:py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+    <footer className="bg-plum-dark py-12 text-cream md:py-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8">
           <div>
-            <h3 className="font-serif text-lg md:text-xl mb-3 md:mb-4">SK Hand Embroidery</h3>
-            <p className="text-cream/80 text-xs md:text-sm">
+            <h3 className="font-serif text-2xl">SK Hand Embroidery</h3>
+            <p className="mt-4 max-w-sm text-sm leading-7 text-cream/65">
               Exquisite hand-embroidered abayas and modest wear crafted with love and care.
             </p>
           </div>
           
           <div>
-            <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">Quick Links</h4>
-            <ul className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
+            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Explore</h4>
+            <ul className="mt-4 space-y-3 text-sm text-cream/75">
               <li>
                 <Link href="/" className="hover:text-gold transition-colors">
                   Home
@@ -34,14 +34,16 @@ export default function Footer() {
           </div>
           
           <div>
-            <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">Contact Us</h4>
-            <p className="text-xs md:text-sm text-cream/80">
-              WhatsApp: 0312 2789939
+            <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Visit the studio</h4>
+            <p className="mt-4 text-sm leading-7 text-cream/75">
+              WhatsApp: 0312 2789939<br />
+              Lahore, Pakistan<br />
+              Mon–Sat, 11:00–19:00
             </p>
           </div>
         </div>
         
-        <div className="border-t border-cream/20 mt-6 md:mt-8 pt-6 md:pt-8 text-center text-xs md:text-sm text-cream/60">
+        <div className="mt-12 border-t border-cream/15 pt-6 text-center text-xs text-cream/45 md:mt-16">
           <p>&copy; {new Date().getFullYear()} SK Hand Embroidery Boutique. All rights reserved.</p>
         </div>
       </div>

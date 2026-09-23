@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     } = body;
 
     // Generate unique tracking code
-    let trackingCode: string;
+    let trackingCode = '';
     let isUnique = false;
     let attempts = 0;
 

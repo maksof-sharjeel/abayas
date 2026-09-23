@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fdf5f5;
-  --foreground: #4a4a4a;
-  --rose-light: #fce4ec;
-  --rose: #f8bbd9;
-  --rose-dark: #ec407a;
-  --mauve: #ce93d8;
-  --plum: #7b1fa2;
-  --plum-dark: #4a148c;
-  --gold: #d4af37;
-  --gold-light: #f4e4bc;
-  --cream: #faf8f5;
+  --background: #f4f0e9;
+  --foreground: #302725;
+  --rose-light: #efe4dc;
+  --rose: #dec1b2;
+  --rose-dark: #a6533b;
+  --mauve: #b77b68;
+  --plum: #8b4b3b;
+  --plum-dark: #2c211e;
+  --gold: #b58b4c;
+  --gold-light: #e8d7b9;
+  --cream: #fbf9f5;
 }
 
 @theme inline {
@@ -30,10 +30,10 @@
   --font-serif: 'Playfair Display', Georgia, serif;
 }
 
-@media (prefers-color-s: dark) {
+@media (prefers-color-scheme: dark) {
   :root {
-    --background: #1a1a1a;
-    --foreground: #f5f5f5;
+    --background: #f4f0e9;
+    --foreground: #302725;
   }
 }
 
@@ -41,4 +41,19 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  background-image: radial-gradient(rgba(48, 39, 37, 0.045) 0.7px, transparent 0.7px);
+  background-size: 8px 8px;
+}
+
+::selection {
+  background: var(--gold-light);
+  color: var(--plum-dark);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }

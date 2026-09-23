@@ -3,15 +3,59 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import AdminLayout from '@/components/AdminLayout';
+import LoadingState from '@/components/LoadingState';
 
 interface PaymentMethod {
   id: string;
   name: string;
+  accountTitle?: string;
+  accountNumber?: string;
+  ibanNumber?: string;
+  bank?: string;
   instructions?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+interface PaymentForm {
+  name: string;
+  accountTitle: string;
+  accountNumber: string;
+  ibanNumber: string;
+  bank: string;
+  instructions: string;
+  isActive: boolean;
+}
+
+const emptyForm: PaymentForm = {
+  name: '',
+  accountTitle: '',
+  accountNumber: '',
+  ibanNumber: '',
+  bank: '',
+  instructions: '',
+  isActive: true,
+};
+
+function parsePaymentInstructions(instructions = ''): Omit<PaymentForm, 'name' | 'isActive'> {
+  const values = { accountTitle: '', accountNumber: '', ibanNumber: '', bank: '', instructions: '' };
+  const extraLines: string[] = [];
+  instructions.split('\n').forEach((line) => {
+    const match = line.match(/^(Account Title|Account Number|IBAN Number|Bank):\s*(.*)$/i);
+    if (!match) {
+      if (line.trim()) extraLines.push(line);
+      return;
+    }
+    const key = match[1].toLowerCase().replace(/\s/g, '') as 'accounttitle' | 'accountnumber' | 'ibannumber' | 'bank';
+    if (key === 'accounttitle') values.accountTitle = match[2];
+    if (key === 'accountnumber') values.accountNumber = match[2];
+    if (key === 'ibannumber') values.ibanNumber = match[2];
+    if (key === 'bank') values.bank = match[2];
+  });
+  values.instructions = extraLines.join('\n');
+  return values;
 }
 
 export default function PaymentMethodsPage() {
@@ -21,11 +65,7 @@ export default function PaymentMethodsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    instructions: '',
-    isActive: true,
-  });
+  const [formData, setFormData] = useState<PaymentForm>(emptyForm);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -78,7 +118,7 @@ export default function PaymentMethodsPage() {
         } else {
           setMethods([...methods, updatedMethod]);
         }
-        setFormData({ name: '', instructions: '', isActive: true });
+        setFormData(emptyForm);
         setEditingMethod(null);
         setShowForm(false);
       }
@@ -91,7 +131,13 @@ export default function PaymentMethodsPage() {
     setEditingMethod(method);
     setFormData({
       name: method.name,
-      instructions: method.instructions || '',
+      accountTitle: method.accountTitle || parsePaymentInstructions(method.instructions).accountTitle,
+      accountNumber: method.accountNumber || parsePaymentInstructions(method.instructions).accountNumber,
+      ibanNumber: method.ibanNumber || parsePaymentInstructions(method.instructions).ibanNumber,
+      bank: method.bank || parsePaymentInstructions(method.instructions).bank,
+      instructions: method.instructions && !method.accountTitle && !method.accountNumber && !method.ibanNumber && !method.bank
+        ? parsePaymentInstructions(method.instructions).instructions
+        : method.instructions || '',
       isActive: method.isActive,
     });
     setShowForm(true);
@@ -132,7 +178,7 @@ export default function PaymentMethodsPage() {
   };
 
   if (status === 'loading' || loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingState label="Loading payment methods" />;
   }
 
   if (!session) {
@@ -140,25 +186,14 @@ export default function PaymentMethodsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-4 md:px-6 py-3 md:py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-lg md:text-2xl hover:text-gold">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-3 md:gap-4">
-            <span className="text-xs md:text-sm">{session.user?.email}</span>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+    <AdminLayout>
+      <div className="mx-auto max-w-7xl p-5 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="font-serif text-2xl md:text-3xl text-plum-dark">Payment Methods</h1>
           <button
             onClick={() => {
               setEditingMethod(null);
-              setFormData({ name: '', instructions: '', isActive: true });
+              setFormData(emptyForm);
               setShowForm(!showForm);
             }}
             className="bg-plum text-cream px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
@@ -182,14 +217,28 @@ export default function PaymentMethodsPage() {
                   className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
                 />
               </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <label className="block text-xs md:text-sm font-medium text-foreground">Account Title
+                  <input type="text" name="accountTitle" value={formData.accountTitle} onChange={handleChange} placeholder="e.g., SK Hand Embroidery" className="mt-2 w-full rounded-lg border border-rose/30 px-3 py-2 md:px-4 md:py-3" />
+                </label>
+                <label className="block text-xs md:text-sm font-medium text-foreground">Account Number
+                  <input type="text" name="accountNumber" value={formData.accountNumber} onChange={handleChange} placeholder="Enter account number" className="mt-2 w-full rounded-lg border border-rose/30 px-3 py-2 md:px-4 md:py-3" />
+                </label>
+                <label className="block text-xs md:text-sm font-medium text-foreground">IBAN Number
+                  <input type="text" name="ibanNumber" value={formData.ibanNumber} onChange={handleChange} placeholder="PK00 ABCD 0000 0000" className="mt-2 w-full rounded-lg border border-rose/30 px-3 py-2 md:px-4 md:py-3" />
+                </label>
+                <label className="block text-xs md:text-sm font-medium text-foreground">Bank
+                  <input type="text" name="bank" value={formData.bank} onChange={handleChange} placeholder="e.g., Meezan Bank" className="mt-2 w-full rounded-lg border border-rose/30 px-3 py-2 md:px-4 md:py-3" />
+                </label>
+              </div>
               <div>
-                <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Instructions (Optional)</label>
+                <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Additional Instructions (Optional)</label>
                 <textarea
                   name="instructions"
                   value={formData.instructions}
                   onChange={handleChange}
                   rows={3}
-                  placeholder="e.g., Account number, JazzCash number, etc."
+                  placeholder="e.g., Send payment screenshot on WhatsApp after transfer"
                   className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
                 />
               </div>
@@ -230,7 +279,7 @@ export default function PaymentMethodsPage() {
 
         <div className="bg-cream rounded-lg overflow-hidden border border-rose/20">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px]">
+            <table className="w-full min-w-150">
               <thead className="bg-rose-light">
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-plum-dark">Name</th>
@@ -287,6 +336,6 @@ export default function PaymentMethodsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

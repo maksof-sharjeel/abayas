@@ -1,142 +1,77 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const message = `New inquiry from ${formData.name}:\n\nPhone: ${formData.phone}\n\nMessage: ${formData.message}`;
-    const whatsappUrl = `https://wa.me/923122789939?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const message = [
+      'Hello SK Hand Embroidery, I have an inquiry.',
+      '',
+      `Name: ${formData.name}`,
+      `Phone: ${formData.phone}`,
+      `Message: ${formData.message}`,
+    ].join('\n');
+    window.open(`https://wa.me/923122789939?text=${encodeURIComponent(message)}`, '_blank');
     setSubmitted(true);
     setFormData({ name: '', phone: '', message: '' });
-    
-    setTimeout(() => setSubmitted(false), 3000);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    window.setTimeout(() => setSubmitted(false), 4000);
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
-      
-      <main className="flex-1 bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          <div className="max-w-2xl mx-auto">
-            <h1 className="font-serif text-2xl md:text-3xl lg:text-4xl text-plum-dark mb-6 md:mb-8 text-center">Contact Us</h1>
-            
-            <div className="bg-cream rounded-lg p-6 md:p-8 mb-6 md:mb-8">
-              <h2 className="font-serif text-xl md:text-2xl text-plum-dark mb-3 md:mb-4">About SK Hand Embroidery</h2>
-              <p className="text-foreground/80 mb-3 md:mb-4 text-sm md:text-base">
-                Welcome to SK Hand Embroidery Boutique, where tradition meets elegance. Each piece in our collection 
-                is meticulously hand-embroidered by skilled artisans, bringing you the finest in modest wear.
-              </p>
-              <p className="text-foreground/80 mb-3 md:mb-4 text-sm md:text-base">
-                Our abayas and modest wear are crafted with premium fabrics and attention to detail, ensuring you 
-                look and feel your best for every occasion.
-              </p>
-              <p className="text-foreground/80 text-sm md:text-base">
-                Whether you're looking for everyday simplicity or embroidered elegance for special events, we have 
-                something perfect for you.
-              </p>
+      <main className="flex-1">
+        <section className="bg-plum-dark text-cream">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="flex flex-col justify-center px-5 py-16 sm:px-8 md:py-24 lg:px-16">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-gold">Come say hello</p>
+              <h1 className="mt-4 max-w-xl font-serif text-5xl leading-[0.98] md:text-7xl">Let&apos;s find your next favourite piece.</h1>
+              <p className="mt-7 max-w-lg text-base leading-7 text-cream/70 md:text-lg">Whether you need help choosing a size, want to customise a detail, or simply want to see what is new, our studio team is here for you.</p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <a href="https://wa.me/923122789939" target="_blank" rel="noopener noreferrer" className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-plum-dark transition-colors hover:bg-gold-light">Chat on WhatsApp</a>
+                <a href="tel:+923122789939" className="rounded-full border border-cream/35 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream/10">Call the studio</a>
+              </div>
             </div>
-
-            <div className="bg-rose-light rounded-lg p-6 md:p-8 mb-6 md:mb-8 text-center">
-              <h2 className="font-serif text-xl md:text-2xl text-plum-dark mb-3 md:mb-4">Quick Contact</h2>
-              <a
-                href="https://wa.me/923122789939"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-green-700 transition-colors text-sm md:text-base"
-              >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                Chat on WhatsApp
-              </a>
-              <p className="mt-3 md:mt-4 text-foreground/70 text-sm md:text-base">0312 2789939</p>
-            </div>
-
-            <div className="bg-cream rounded-lg p-6 md:p-8">
-              <h2 className="font-serif text-xl md:text-2xl text-plum-dark mb-5 md:mb-6">Send us a Message</h2>
-              
-              {submitted && (
-                <div className="bg-green-100 text-green-800 p-3 md:p-4 rounded-lg mb-4 md:mb-6 text-sm md:text-base">
-                  Thank you! Your message has been sent via WhatsApp.
-                </div>
-              )}
-              
-              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                <div>
-                  <label htmlFor="name" className="block text-xs md:text-sm font-medium text-foreground mb-2">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="phone" className="block text-xs md:text-sm font-medium text-foreground mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="message" className="block text-xs md:text-sm font-medium text-foreground mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
-                  />
-                </div>
-                
-                <button
-                  type="submit"
-                  className="w-full bg-plum text-cream py-3 md:py-4 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
-                >
-                  Send via WhatsApp
-                </button>
-              </form>
+            <div className="relative min-h-90 overflow-hidden lg:min-h-125">
+              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1100&q=85" alt="Textured fabric and clothing details in a boutique studio" className="absolute inset-0 h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-linear-to-t from-plum-dark/55 via-transparent to-transparent" />
+              <p className="absolute bottom-7 left-7 text-xs font-semibold uppercase tracking-[0.22em] text-cream/80">Lahore • Pakistan</p>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 md:py-20">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <a href="https://wa.me/923122789939" target="_blank" rel="noopener noreferrer" className="group border border-plum-dark/10 bg-cream p-6 transition-colors hover:bg-rose-light"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Fastest reply</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">WhatsApp</h2><p className="mt-2 text-sm text-foreground/60">0312 2789939</p><span className="mt-6 block text-sm font-semibold text-plum">Start a conversation →</span></a>
+            <a href="tel:+923122789939" className="group border border-plum-dark/10 bg-cream p-6 transition-colors hover:bg-rose-light"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Speak with us</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">Call the studio</h2><p className="mt-2 text-sm text-foreground/60">Mon–Sat, 11:00–19:00</p><span className="mt-6 block text-sm font-semibold text-plum">Call now →</span></a>
+            <div className="border border-plum-dark/10 bg-cream p-6"><p className="text-xs font-semibold uppercase tracking-[0.2em] text-plum">Studio details</p><h2 className="mt-4 font-serif text-2xl text-plum-dark">Visit us</h2><p className="mt-2 text-sm leading-6 text-foreground/60">Lahore, Pakistan<br />Private appointments available</p><span className="mt-6 block text-sm font-semibold text-plum">By appointment</span></div>
+          </div>
+        </section>
+
+        <section className="bg-rose-light/60 py-14 md:py-20">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-5 sm:px-8 md:grid-cols-[0.8fr_1.2fr] md:items-start">
+            <div><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">Personal service</p><h2 className="mt-4 font-serif text-4xl leading-tight text-plum-dark md:text-5xl">Tell us what you&apos;re looking for.</h2><p className="mt-5 max-w-md text-sm leading-7 text-foreground/65">Share your question below and we&apos;ll open a WhatsApp conversation with your details already prepared.</p><div className="mt-8 border-l-2 border-gold pl-4 text-sm leading-6 text-foreground/65"><p>Size guidance</p><p>Custom colour requests</p><p>Order and delivery help</p></div></div>
+            <form onSubmit={handleSubmit} className="border border-plum-dark/10 bg-cream p-6 md:p-8">
+              {submitted && <div className="mb-5 border border-green-200 bg-green-50 p-3 text-sm text-green-800">Your WhatsApp message is ready to send.</div>}
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <label className="text-sm font-medium text-foreground">Your name<input type="text" name="name" value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} required className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-background px-4 py-3 outline-none transition-colors focus:border-plum" /></label>
+                <label className="text-sm font-medium text-foreground">Phone number<input type="tel" name="phone" value={formData.phone} onChange={(event) => setFormData({ ...formData, phone: event.target.value })} required className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-background px-4 py-3 outline-none transition-colors focus:border-plum" /></label>
+              </div>
+              <label className="mt-5 block text-sm font-medium text-foreground">How can we help?<textarea name="message" value={formData.message} onChange={(event) => setFormData({ ...formData, message: event.target.value })} required rows={5} placeholder="Tell us about the piece, size or occasion..." className="mt-2 w-full rounded-lg border border-plum-dark/15 bg-background px-4 py-3 outline-none transition-colors focus:border-plum" /></label>
+              <button type="submit" className="mt-6 w-full rounded-full bg-plum-dark px-5 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-plum">Continue on WhatsApp →</button>
+            </form>
+          </div>
+        </section>
+
+        <section className="mx-auto flex max-w-7xl flex-col justify-between gap-5 px-5 py-10 sm:px-8 md:flex-row md:items-center md:py-14"><p className="font-serif text-2xl text-plum-dark">Looking for something specific?</p><Link href="/shop" className="text-sm font-semibold text-plum underline-offset-4 hover:underline">Explore the collection →</Link></section>
       </main>
-      
       <Footer />
     </div>
   );

@@ -16,11 +16,15 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, instructions, isActive } = body;
+    const { name, accountTitle, accountNumber, ibanNumber, bank, instructions, isActive } = body;
 
     const method = await prisma.paymentMethod.create({
       data: {
         name,
+        accountTitle,
+        accountNumber,
+        ibanNumber,
+        bank,
         instructions,
         isActive: isActive ?? true,
       },

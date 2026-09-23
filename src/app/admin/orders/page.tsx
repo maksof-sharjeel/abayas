@@ -3,7 +3,9 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import AdminLayout from '@/components/AdminLayout';
+import OrderFormModal from '@/components/OrderFormModal';
+import LoadingState from '@/components/LoadingState';
 
 interface Order {
   id: string;
@@ -32,6 +34,7 @@ export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -39,21 +42,30 @@ export default function OrdersPage() {
     }
   }, [status, router]);
 
+  const fetchOrders = async () => {
+    try {
+      const res = await fetch('/api/orders');
+      if (res.ok) setOrders(await res.json());
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    async function fetchOrders() {
+    if (!session) return;
+    async function loadOrders() {
       try {
         const res = await fetch('/api/orders');
-        if (res.ok) {
-          const data = await res.json();
-          setOrders(data);
-        }
+        if (res.ok) setOrders(await res.json());
       } catch (error) {
         console.error('Error fetching orders:', error);
       } finally {
         setLoading(false);
       }
     }
-    if (session) fetchOrders();
+    loadOrders();
   }, [session]);
 
   const handleStatusUpdate = async (id: string, status: string) => {
@@ -100,7 +112,7 @@ export default function OrdersPage() {
   };
 
   if (status === 'loading' || loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <LoadingState label="Loading orders" />;
   }
 
   if (!session) {
@@ -108,32 +120,22 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-plum-dark text-cream px-4 md:px-6 py-3 md:py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/admin/dashboard" className="font-serif text-lg md:text-2xl hover:text-gold">
-            ← Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-3 md:gap-4">
-            <span className="text-xs md:text-sm">{session.user?.email}</span>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+    <AdminLayout>
+      <div className="p-6 md:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="font-serif text-2xl md:text-3xl text-plum-dark">Orders</h1>
-          <Link
-            href="/admin/orders/new"
-            className="bg-plum text-cream px-4 md:px-6 py-2 md:py-3 rounded-full font-semibold hover:bg-plum-dark transition-colors text-sm md:text-base"
+          <button
+            type="button"
+            onClick={() => setOrderModalOpen(true)}
+            className="rounded-full bg-plum-dark px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:bg-plum"
           >
             Add Manual Order
-          </Link>
+          </button>
         </div>
 
         <div className="bg-cream rounded-lg overflow-hidden border border-rose/20">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px]">
+            <table className="w-full min-w-250">
               <thead className="bg-rose-light">
                 <tr>
                   <th className="px-3 md:px-4 py-3 text-left text-[10px] md:text-xs font-semibold text-plum-dark">Tracking</th>
@@ -218,6 +220,7 @@ export default function OrdersPage() {
           </div>
         </div>
       </div>
-    </div>
+      {orderModalOpen && <OrderFormModal onClose={() => setOrderModalOpen(false)} onSaved={fetchOrders} />}
+    </AdminLayout>
   );
 }

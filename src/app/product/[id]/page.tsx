@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingState from '@/components/LoadingState';
+import { buildProductWhatsAppMessage } from '@/lib/whatsapp';
 
 interface Product {
   id: string;
@@ -19,15 +21,13 @@ interface Product {
   stockStatus: string;
 }
 
-interface DeliveryZone {
-  id: string;
-  cityName: string;
-  deliveryCharge: number;
-}
-
 interface PaymentMethod {
   id: string;
   name: string;
+  accountTitle?: string;
+  accountNumber?: string;
+  ibanNumber?: string;
+  bank?: string;
   instructions?: string;
   isActive: boolean;
 }
@@ -41,7 +41,7 @@ export default function ProductDetailPage() {
   
   // Order form state
   const [showOrderForm, setShowOrderForm] = useState(false);
-  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+  const [deliveryCharge, setDeliveryCharge] = useState(0);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -57,7 +57,6 @@ export default function ProductDetailPage() {
     paymentMethodId: '',
     deliveryChargeScreenshot: null as File | null,
   });
-  const [deliveryCharge, setDeliveryCharge] = useState(0);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -85,7 +84,7 @@ export default function ProductDetailPage() {
         const res = await fetch('/api/delivery-zones');
         if (res.ok) {
           const data = await res.json();
-          setDeliveryZones(data);
+          setDeliveryCharge(data.deliveryCharge || 0);
         }
       } catch (error) {
         console.error('Error fetching delivery zones:', error);
@@ -109,15 +108,10 @@ export default function ProductDetailPage() {
     fetchPaymentMethods();
   }, []);
 
-  useEffect(() => {
-    // Update delivery charge when city changes
-    const zone = deliveryZones.find(z => z.cityName === orderFormData.customerCity);
-    setDeliveryCharge(zone ? zone.deliveryCharge : 0);
-  }, [orderFormData.customerCity, deliveryZones]);
-
   const handleWhatsAppOrder = () => {
     if (!product) return;
-    const message = `Hi, I'm interested in ordering: ${product.name} (PKR ${product.price.toLocaleString()})`;
+    const productUrl = `${window.location.origin}/product/${product.id}`;
+    const message = buildProductWhatsAppMessage(product, productUrl);
     const whatsappUrl = `https://wa.me/923122789939?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -199,9 +193,7 @@ export default function ProductDetailPage() {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-1 flex items-center justify-center">
-          <p>Loading...</p>
-        </main>
+        <main className="flex-1"><LoadingState label="Loading product" fullScreen={false} /></main>
         <Footer />
       </div>
     );
@@ -340,8 +332,12 @@ export default function ProductDetailPage() {
 
               {/* Order Form */}
               {showOrderForm && (
-                <form onSubmit={handleOrderSubmit} className="mt-6 p-6 bg-rose-light rounded-lg space-y-4">
-                  <h3 className="font-serif text-xl text-plum-dark mb-4">Order Details</h3>
+                <form onSubmit={handleOrderSubmit} className="fixed inset-0 z-60 overflow-y-auto bg-plum-dark/60 p-4 backdrop-blur-sm md:p-8">
+                  <div className="mx-auto max-h-[calc(100vh-2rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border border-plum-dark/10 bg-background p-5 shadow-2xl md:max-h-[calc(100vh-4rem)] md:p-8">
+                    <div className="mb-5 flex items-start justify-between border-b border-plum-dark/10 pb-4">
+                      <div><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-plum">Secure order request</p><h3 className="mt-1 font-serif text-2xl text-plum-dark">Order details</h3></div>
+                      <button type="button" onClick={() => setShowOrderForm(false)} aria-label="Close order form" className="text-2xl leading-none text-foreground/50 hover:text-plum-dark">×</button>
+                    </div>
                   
                   <div>
                     <label className="block text-xs md:text-sm font-medium text-foreground mb-2">Name *</label>
@@ -381,20 +377,15 @@ export default function ProductDetailPage() {
 
                   <div>
                     <label className="block text-xs md:text-sm font-medium text-foreground mb-2">City *</label>
-                    <select
+                    <input
+                      type="text"
                       name="customerCity"
                       value={orderFormData.customerCity}
                       onChange={handleOrderFormChange}
                       required
+                      placeholder="e.g. Lahore, Karachi, Islamabad"
                       className="w-full px-3 md:px-4 py-2 md:py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum text-sm md:text-base"
-                    >
-                      <option value="">Select City</option>
-                      {deliveryZones.map((zone) => (
-                        <option key={zone.id} value={zone.cityName}>
-                          {zone.cityName} (PKR {zone.deliveryCharge.toLocaleString()})
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
 
                   {deliveryCharge > 0 && (
@@ -455,10 +446,16 @@ export default function ProductDetailPage() {
 
                   {orderFormData.paymentMethodId && (() => {
                     const method = paymentMethods.find(m => m.id === orderFormData.paymentMethodId);
-                    if (method?.instructions) {
+                    if (method && (method.accountTitle || method.accountNumber || method.ibanNumber || method.bank || method.instructions)) {
                       return (
                         <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-                          <p className="text-xs md:text-sm text-blue-800 whitespace-pre-line">{method.instructions}</p>
+                          <div className="space-y-1 text-xs text-blue-800 md:text-sm">
+                            {method.accountTitle && <p><strong>Account Title:</strong> {method.accountTitle}</p>}
+                            {method.accountNumber && <p><strong>Account Number:</strong> {method.accountNumber}</p>}
+                            {method.ibanNumber && <p><strong>IBAN Number:</strong> {method.ibanNumber}</p>}
+                            {method.bank && <p><strong>Bank:</strong> {method.bank}</p>}
+                            {method.instructions && <p className="whitespace-pre-line">{method.instructions}</p>}
+                          </div>
                         </div>
                       );
                     }
@@ -493,6 +490,7 @@ export default function ProductDetailPage() {
                   >
                     {orderLoading ? 'Placing Order...' : 'Place Order'}
                   </button>
+                  </div>
                 </form>
               )}
 
