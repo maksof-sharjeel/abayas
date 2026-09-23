@@ -9,7 +9,7 @@ export async function GET() {
       // Create default settings if none exist
       settings = await prisma.settings.create({
         data: {
-          whatsappNumber: '923122789939',
+          whatsappNumber: '923198271315',
           boutiqueDescription: 'SK Hand Embroidery Boutique - Exquisite hand-embroidered abayas and modest wear.',
         },
       });

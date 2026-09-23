@@ -7,7 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-plum-dark/10 bg-cream/95 backdrop-blur">
+    <nav className="sticky top-0 z-50 border-b border-plum-dark/10 bg-cream/95 backdrop-blur motion-rise">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="flex h-19 items-center justify-between">
           <Link href="/" className="group flex items-center gap-3 text-plum-dark">
@@ -19,16 +19,16 @@ export default function Navbar() {
           </Link>
           
           <div className="hidden items-center gap-8 md:flex">
-            <Link href="/" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
+            <Link href="/" className="nav-link text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Home
             </Link>
-            <Link href="/shop" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
+            <Link href="/shop" className="nav-link text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Shop
             </Link>
-            <Link href="/contact" className="text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
+            <Link href="/contact" className="nav-link text-sm font-medium text-foreground/75 transition-colors hover:text-plum">
               Contact
             </Link>
-            <Link href="/shop" className="rounded-full bg-plum-dark px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-plum">
+            <Link href="/shop" className="button-sheen rounded-full bg-plum-dark px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream transition-colors hover:bg-plum">
               Explore collection
             </Link>
           </div>

@@ -23,7 +23,7 @@ export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<Settings>({
     id: '',
-    whatsappNumber: '923122789939',
+    whatsappNumber: '923198271315',
     boutiqueDescription: '',
     instagram: '',
     facebook: '',
@@ -119,10 +119,10 @@ export default function AdminSettings() {
                   value={settings.whatsappNumber}
                   onChange={handleChange}
                   required
-                  placeholder="923122789939"
+                  placeholder="923198271315"
                   className="w-full px-4 py-3 border border-rose/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-plum"
                 />
-                <p className="mt-1 text-xs text-foreground/60">Format: 923122789939 (no spaces or dashes)</p>
+                <p className="mt-1 text-xs text-foreground/60">Format: 923198271315 (no spaces or dashes)</p>
               </div>
             </div>
           </div>

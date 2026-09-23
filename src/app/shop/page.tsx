@@ -59,7 +59,7 @@ function ShopContent() {
       
       <main className="flex-1 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          <h1 className="font-serif text-2xl md:text-3xl lg:text-4xl text-plum-dark mb-6 md:mb-8 text-center">Shop Collection</h1>
+          <div className="motion-rise mb-8 text-center md:mb-10"><p className="text-xs font-semibold uppercase tracking-[0.24em] text-plum">The collection</p><h1 className="mt-3 font-serif text-4xl text-plum-dark md:text-5xl">Shop Collection</h1><p className="mx-auto mt-3 max-w-md text-sm leading-6 text-foreground/60">Small-batch abayas, finished with intention.</p></div>
           
           {/* Category Filter */}
           <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6 md:mb-8">
@@ -67,8 +67,8 @@ function ShopContent() {
               <button
                 key={category}
                 onClick={() => setSelectedCategoryOverride(category === 'All' ? 'All' : slugify(category))}
-                className={`px-4 md:px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base ${
-                  selectedCategory === category
+                className={`interactive-lift px-4 md:px-6 py-2 rounded-full font-semibold transition-colors text-sm md:text-base ${
+                  selectedCategory === category || slugify(category) === selectedCategory
                     ? 'bg-plum text-cream'
                     : 'bg-rose-light text-plum-dark hover:bg-rose'
                 }`}
@@ -87,14 +87,14 @@ function ShopContent() {
               {filteredProducts.map((product) => (
                 <article
                   key={product.id}
-                  className="bg-cream rounded-lg md:rounded-xl overflow-hidden hover:shadow-lg transition-shadow transform hover:-translate-y-1 border border-rose/20"
+                  className="group interactive-lift motion-rise overflow-hidden rounded-lg border border-rose/20 bg-cream md:rounded-xl"
                 >
                   <div className="aspect-square bg-rose-light relative">
                     {product.images && product.images[0] ? (
                       <img
                         src={product.images[0]}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="image-zoom h-full w-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-foreground/40 text-xs md:text-sm">
@@ -114,7 +114,7 @@ function ShopContent() {
                     <p className="text-plum font-bold text-sm md:text-base mb-2 md:mb-3">PKR {product.price.toLocaleString()}</p>
                     <Link
                       href={`/product/${product.id}`}
-                      className="block w-full rounded-full bg-plum-dark py-2.5 text-center text-xs font-semibold text-cream transition-colors hover:bg-plum md:text-sm"
+                      className="button-sheen block w-full rounded-full bg-plum-dark py-2.5 text-center text-xs font-semibold text-cream transition-colors hover:bg-plum md:text-sm"
                     >
                       View Details
                     </Link>

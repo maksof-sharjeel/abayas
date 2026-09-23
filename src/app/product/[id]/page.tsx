@@ -112,7 +112,7 @@ export default function ProductDetailPage() {
     if (!product) return;
     const productUrl = `${window.location.origin}/product/${product.id}`;
     const message = buildProductWhatsAppMessage(product, productUrl);
-    const whatsappUrl = `https://wa.me/923122789939?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/923198271315?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -120,7 +120,7 @@ export default function ProductDetailPage() {
     const message = product
       ? `Hi, I would like to speak with someone about ${product.name} (${product.productCode || 'product'}).`
       : 'Hi, I would like to speak with someone from SK Hand Embroidery.';
-    window.open(`https://wa.me/923122789939?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/923198271315?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   const handleOrderFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -227,12 +227,12 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {/* Image Gallery */}
             <div>
-              <div className="aspect-square bg-rose-light rounded-lg overflow-hidden mb-3 md:mb-4">
+                <div className="group aspect-square overflow-hidden rounded-lg bg-rose-light mb-3 md:mb-4">
                 {product.images && product.images[selectedImage] ? (
                   <img
                     src={product.images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="image-zoom h-full w-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-foreground/40 text-sm md:text-base">
@@ -246,7 +246,7 @@ export default function ProductDetailPage() {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`aspect-square bg-rose-light rounded overflow-hidden border-2 ${
+                      className={`interactive-lift aspect-square overflow-hidden rounded border-2 bg-rose-light ${
                         selectedImage === index ? 'border-plum' : 'border-transparent'
                       }`}
                     >
@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
               {product.productCode && (
                 <p className="text-plum/70 text-xs md:text-sm mb-2">Code: {product.productCode}</p>
               )}
-              <h1 className="font-serif text-2xl md:text-3xl lg:text-4xl text-plum-dark mb-3 md:mb-4">{product.name}</h1>
+              <h1 className="motion-rise font-serif text-2xl text-plum-dark mb-3 md:text-3xl lg:text-4xl md:mb-4">{product.name}</h1>
               <p className="text-xl md:text-2xl font-bold text-plum mb-4 md:mb-6">PKR {product.price.toLocaleString()}</p>
               
               <div className={`inline-block px-3 py-1 rounded-full text-xs md:text-sm font-semibold mb-4 md:mb-6 ${
@@ -304,7 +304,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                 <button
                   onClick={handleCall}
-                  className="flex-1 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 flex items-center justify-center gap-2"
+                  className="button-sheen flex-1 rounded-full bg-blue-600 py-3 text-base font-semibold text-white transition-colors hover:bg-blue-700 md:py-4 md:text-lg flex items-center justify-center gap-2"
                 >
                   <span>💬</span>
                   WhatsApp Call
@@ -312,7 +312,7 @@ export default function ProductDetailPage() {
                 <button
                   onClick={handleWhatsAppOrder}
                   disabled={product.stockStatus === 'Out of Stock'}
-                  className={`flex-1 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-colors flex items-center justify-center gap-2 ${
+                  className={`button-sheen flex-1 rounded-full py-3 text-base font-semibold transition-colors flex items-center justify-center gap-2 md:py-4 md:text-lg ${
                     product.stockStatus === 'In Stock'
                       ? 'bg-green-600 text-white hover:bg-green-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -327,7 +327,7 @@ export default function ProductDetailPage() {
               {product.stockStatus === 'In Stock' && (
                 <button
                   onClick={() => setShowOrderForm(!showOrderForm)}
-                  className="w-full mt-4 md:mt-6 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-colors bg-plum text-cream hover:bg-plum-dark"
+                  className="button-sheen mt-4 w-full rounded-full bg-plum py-3 text-base font-semibold text-cream transition-colors hover:bg-plum-dark md:mt-6 md:py-4 md:text-lg"
                 >
                   {showOrderForm ? 'Cancel Order' : 'Order Now'}
                 </button>

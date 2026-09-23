@@ -116,10 +116,10 @@ async function main() {
 
   await prisma.settings.upsert({
     where: { id: 'boutique-settings' },
-    update: {},
+    update: { whatsappNumber: '923198271315' },
     create: {
       id: 'boutique-settings',
-      whatsappNumber: '923122789939',
+      whatsappNumber: '923198271315',
       boutiqueDescription: 'Thoughtfully made abayas with hand embroidery, fluid fabrics and a distinctly Lahore point of view.',
     },
   });

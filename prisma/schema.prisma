@@ -54,7 +54,7 @@ model Category {
 
 model Settings {
   id                  String   @id @default(uuid())
-  whatsappNumber      String   @default("923122789939")
+  whatsappNumber      String   @default("923198271315")
   boutiqueDescription String
   instagram           String?
   facebook            String?
